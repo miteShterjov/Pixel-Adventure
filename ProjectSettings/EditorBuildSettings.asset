@@ -23,5 +23,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TheEnd.unity
     guid: 726e47e237201fa4f84e283a3b11dbcc
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: c52e359a698047c1c9b25a0379a369c7, type: 3}
   m_UseUCBPForAssetBundles: 0

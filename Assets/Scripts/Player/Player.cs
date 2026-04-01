@@ -1,424 +1,146 @@
-using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private GameObject fruitDrop;
-    [SerializeField] private DifficultyType gameDifficulty;
     private GameManager gameManager;
-
-    private Rigidbody2D rb;
-    private Animator anim;
-    private CapsuleCollider2D cd;
-
     private bool canBeControlled = false;
 
-    [Header("Movement")]
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private float jumpForce;
-    [SerializeField] private float doubleJumpForce;
-    private float defaultGravityScale;
-    private bool canDoubleJump;
+    private PlayerMovementController movementController;
+    private PlayerCollisionDetector collisionDetector;
+    private PlayerAnimationController animationController;
+    private PlayerJumpController jumpController;
+    private PlayerHealthController healthController;
+    private InputSystem_Actions inputActions;
 
-    [Header("Buffer & Coyote jump")]
-    [SerializeField] private float bufferJumpWindow = .25f;
-    private float bufferJumpActivated = -1;
-    [SerializeField] private float coyoteJumpWindow = .5f;
-    private float coyoteJumpActivated = -1;
-
-    [Header("Wall interactions")]
-    [SerializeField] private float wallJumpDuration = .6f;
-    [SerializeField] private Vector2 wallJumpForce;
-    private bool isWallJumping;
-
-    [Header("Knockback")]
-    [SerializeField] private float knockbackDuration = 1;
-    [SerializeField] private Vector2 knockbackPower;
-    private bool isKnocked;
-
-
-    [Header("Collision")]
-    [SerializeField] private float groundCheckDistance;
-    [SerializeField] private float wallCheckDistance;
-    [SerializeField] private LayerMask whatIsGround;
-    [Space]
-    [SerializeField] private Transform enemyCheck;
-    [SerializeField] private float enemyCheckRadius;
-    [SerializeField] private LayerMask whatIsEnemy;
-    private bool isGrounded;
-    private bool isAirborne;
-    private bool isWallDetected;
-
-    private float xInput;
-    private float yInput;
-
-    private bool facingRight = true;
-    private int facingDir = 1;
-
-    [Header("Player Visuals")]
-    [SerializeField] private AnimatorOverrideController[] animators;
-    [SerializeField] private GameObject deathVfx;
-    [SerializeField] private ParticleSystem dustFx;
-    [SerializeField] private int skinId;
+    private Vector2 moveInput;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        cd = GetComponent<CapsuleCollider2D>();
-        anim = GetComponentInChildren<Animator>();
+        movementController = GetComponent<PlayerMovementController>();
+        collisionDetector = GetComponent<PlayerCollisionDetector>();
+        animationController = GetComponent<PlayerAnimationController>();
+        jumpController = GetComponent<PlayerJumpController>();
+        healthController = GetComponent<PlayerHealthController>();
+
+        inputActions = new InputSystem_Actions();
     }
 
     private void Start()
     {
-        defaultGravityScale = rb.gravityScale;
         gameManager = GameManager.instance;
-
-        UpdateGameDifficulty();
         RespawnFinished(false);
-        UpdateSkin();
+        animationController.UpdateSkin();
     }
 
-   
+    private void OnEnable()  // Fixed typo from "Onable"
+    {
+        inputActions.Player.Enable();
+        inputActions.Player.Move.performed += OnMovePerformed;
+        inputActions.Player.Move.canceled += OnMoveCanceled;
+        inputActions.Player.Jump.performed += OnJumpPerformed;
+    }
+
+    private void OnDisable()
+    {
+        inputActions.Player.Move.performed -= OnMovePerformed;
+        inputActions.Player.Move.canceled -= OnMoveCanceled;
+        inputActions.Player.Jump.performed -= OnJumpPerformed;
+        inputActions.Player.Disable();
+    }
+
+    // Named handlers so they can be properly unsubscribed
+    private void OnMovePerformed(InputAction.CallbackContext ctx)
+        => movementController.HandleInput(ctx.ReadValue<Vector2>());
+
+    private void OnMoveCanceled(InputAction.CallbackContext ctx)
+        => movementController.HandleInput(Vector2.zero);
+
+    private void OnJumpPerformed(InputAction.CallbackContext ctx)
+    {
+        jumpController.JumpButton();
+        jumpController.RequestBufferJump();
+    }
 
     private void Update()
-    { 
-        UpdateAirbornStatus();
+    {
+        collisionDetector.UpdateCollisions();
+        jumpController.UpdateAirbornStatus();
+
+        // Read move input every frame (not subscribe — just read)
+        moveInput = inputActions.Player.Move.ReadValue<Vector2>();
 
         if (canBeControlled == false)
         {
-            HandleCollision();
-            HandleAnimations();
+            animationController.UpdateAnimations();
+            animationController.UpdateGroundedAnimation(collisionDetector.IsGrounded);
+            animationController.UpdateWallDetectedAnimation(collisionDetector.IsWallDetected);
             return;
         }
 
-        if (isKnocked)
+        if (healthController.IsKnocked)
             return;
 
         HandleEnemyDetection();
-        HandleInput();
-        HandleWallSlide();
-        HandleMovement();
-        HandleFlip();
-        HandleCollision();
-        HandleAnimations();
+        movementController.HandleWallSlide(moveInput);
+        movementController.HandleMovement();
+        movementController.HandleFlip();
+        animationController.UpdateAnimations();
+        animationController.UpdateGroundedAnimation(collisionDetector.IsGrounded);
+        animationController.UpdateWallDetectedAnimation(collisionDetector.IsWallDetected);
     }
 
-    public void Damage()
-    {
-        if (gameDifficulty == DifficultyType.Normal)
-        {
-
-            if (gameManager.FruitsCollected() <= 0)
-            {
-                Die();
-                gameManager.RestartLevel();
-            }
-            else
-            {
-                ObjectCreator.instance.CreateObject(fruitDrop, transform,true);
-                gameManager.RemoveFruit();
-            }
-
-            return;
-        }
-
-        if (gameDifficulty == DifficultyType.Hard)
-        {
-            Die();
-            gameManager.RestartLevel();
-        }
-    }
-
-
-    
-    private void UpdateGameDifficulty()
-    {
-        DifficultyManager difficultyManager = DifficultyManager.instance;
-
-        if (difficultyManager != null)
-            gameDifficulty = difficultyManager.difficulty;
-    }
-
-    public void UpdateSkin()
-    {
-        SkinManager skinManager = SkinManager.instance;
-
-        if (skinManager == null)
-            return;
-
-        anim.runtimeAnimatorController = animators[skinManager.choosenSkinId];
-    }
-
-    private void HandleEnemyDetection()
-    {
-        if (rb.linearVelocity.y >= 0)
-            return;
-
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(enemyCheck.position, enemyCheckRadius, whatIsEnemy);
-
-        foreach (var enemy in colliders)
-        {
-            Enemy newEnemy = enemy.GetComponent<Enemy>();
-            if (newEnemy != null)
-            {
-                AudioManager.instance.PlaySFX(1);
-                newEnemy.Die();
-                Jump();
-            }
-        }
-    }
+    public void Damage() => healthController.Damage();
 
     public void RespawnFinished(bool finished)
     {
+        healthController.RespawnFinished(finished);
 
         if (finished)
         {
-            rb.gravityScale = defaultGravityScale;
+            jumpController.ResetGravityScale();
             canBeControlled = true;
-            cd.enabled = true;
-
-            AudioManager.instance.PlaySFX(11);
         }
         else
         {
-            rb.gravityScale = 0;
+            jumpController.SetGravityScale(0);
             canBeControlled = false;
-            cd.enabled = false;
         }
-
     }
+
+    public void UpdateSkin() => animationController.UpdateSkin();
 
     public void Knockback(float sourceDamageXPosition)
+        => healthController.Knockback(sourceDamageXPosition);
+
+    public void Die() => healthController.Die();
+
+    public void Push(Vector2 direction, float duration = 0)
+        => healthController.Push(direction, duration);
+
+    private void HandleEnemyDetection()
     {
-        float knockbackDir = 1;
-
-        if (transform.position.x < sourceDamageXPosition)
-            knockbackDir = -1;
-
-        if(isKnocked)
-            return;
-
-        AudioManager.instance.PlaySFX(9);
-        CameraManager.instance.ScreenShake(knockbackDir);
-        StartCoroutine(KnockbackRoutine());
-        
-        rb.linearVelocity = new Vector2(knockbackPower.x * knockbackDir, knockbackPower.y);
-    }
-    private IEnumerator KnockbackRoutine()
-    {
-        isKnocked = true;
-        anim.SetBool("isKnocked", true);
-
-        yield return new WaitForSeconds(knockbackDuration);
-
-        isKnocked = false;
-        anim.SetBool("isKnocked", false);
-    }
-
-
-    public void Die()
-    {
-        AudioManager.instance.PlaySFX(0);
-
-        GameObject newDeathVfx = Instantiate(deathVfx,transform.position,Quaternion.identity);
-        Destroy(gameObject);
-    }
-
-    public void Push(Vector2 direction,float duration = 0)
-    {
-        StartCoroutine(PushCouroutine(direction,duration));
-    }
-
-    private IEnumerator PushCouroutine(Vector2 direction,float duration)
-    {
-        canBeControlled = false;
-
-        rb.linearVelocity = Vector2.zero;
-        rb.AddForce(direction, ForceMode2D.Impulse);
-
-        yield return new WaitForSeconds(duration);
-
-        canBeControlled = true;
-    }
-
-    private void UpdateAirbornStatus()
-    {
-        if (isGrounded && isAirborne)
-            HandleLanding();
-
-        if (!isGrounded && !isAirborne)
-            BecomeAirborne();
-    }
-    private void BecomeAirborne()
-    {
-        isAirborne = true;
-
-        if (rb.linearVelocity.y < 0)
-            ActivateCoyoteJump();
-    }
-
-    private void HandleLanding()
-    {
-        dustFx.Play();
-
-        isAirborne = false;
-        canDoubleJump = true;
-
-        AttemptBufferJump();
-    }
-
-    private void HandleInput()
-    {
-        xInput = Input.GetAxisRaw("Horizontal");
-        yInput = Input.GetAxisRaw("Vertical");
-
-
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (jumpController.IsAirborne)
         {
-            JumpButton();
-            RequestBufferJump();
+            if (GetComponent<Rigidbody2D>().linearVelocity.y >= 0)
+                return;
+
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(
+                collisionDetector.EnemyCheck.position,
+                collisionDetector.EnemyCheckRadius,
+                collisionDetector.WhatIsEnemy);
+
+            foreach (var enemy in colliders)
+            {
+                Enemy newEnemy = enemy.GetComponent<Enemy>();
+                if (newEnemy != null)
+                {
+                    AudioManager.instance.PlaySFX(1);
+                    newEnemy.Die();
+                    jumpController.JumpButton();
+                }
+            }
         }
-    }
-
-    #region Coyote & Buffer Jump
-
-    private void RequestBufferJump()
-    {
-        if (isAirborne)
-            bufferJumpActivated = Time.time;
-    }
-    private void AttemptBufferJump()
-    {
-        if (Time.time < bufferJumpActivated + bufferJumpWindow)
-        {
-            bufferJumpActivated = Time.time - 1;
-            Jump();
-        }
-    }
-    private void ActivateCoyoteJump() => coyoteJumpActivated = Time.time;
-    private void CancelCoyoteJump() => coyoteJumpActivated = Time.time - 1;
-
-    #endregion
-
-    private void JumpButton()
-    {
-        bool coyoteJumpAvalible = Time.time < coyoteJumpActivated + coyoteJumpWindow;
-
-        if (isGrounded || coyoteJumpAvalible)
-        {
-            Jump();
-        }
-        else if (isWallDetected && !isGrounded)
-        {
-            WallJump();
-        }
-        else if (canDoubleJump)
-        {
-            DoubleJump();
-        }
-
-        CancelCoyoteJump();
-    }
-
-
-
-    private void Jump()
-    {
-        dustFx.Play();
-        AudioManager.instance.PlaySFX(3);
-
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-    }
-    private void DoubleJump()
-    {
-        dustFx.Play();
-        AudioManager.instance.PlaySFX(3);
-
-        StopCoroutine(WallJumpRoutine());
-        isWallJumping = false;
-        canDoubleJump = false;
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
-    }
-
-    private void WallJump()
-    {
-        dustFx.Play();
-        AudioManager.instance.PlaySFX(12);
-
-        canDoubleJump = true;
-        rb.linearVelocity = new Vector2(wallJumpForce.x * -facingDir, wallJumpForce.y);
-
-        Flip();
-
-        StopAllCoroutines();
-        StartCoroutine(WallJumpRoutine());
-    }
-
-    private IEnumerator WallJumpRoutine()
-    {
-
-        isWallJumping = true;
-
-        yield return new WaitForSeconds(wallJumpDuration);
-
-        isWallJumping = false;
-    }
-
-    private void HandleWallSlide()
-    {
-        bool canWallSlide = isWallDetected && rb.linearVelocity.y < 0;
-        float yModifer = yInput < 0 ? 1 : .05f;
-
-        if (canWallSlide == false)
-            return;
-
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * yModifer);
-    }
-
-    private void HandleCollision()
-    {
-        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
-        isWallDetected = Physics2D.Raycast(transform.position, Vector2.right * facingDir, wallCheckDistance, whatIsGround);
-    }
-
-    private void HandleAnimations()
-    {
-        anim.SetFloat("xVelocity", rb.linearVelocity.x);
-        anim.SetFloat("yVelocity", rb.linearVelocity.y);
-        anim.SetBool("isGrounded", isGrounded);
-        anim.SetBool("isWallDetected", isWallDetected);
-    }
-
-    private void HandleMovement()
-    {
-        if (isWallDetected)
-            return;
-
-        if (isWallJumping)
-            return;
-
-        rb.linearVelocity = new Vector2(xInput * moveSpeed, rb.linearVelocity.y);
-    }
-
-    private void HandleFlip()
-    {
-        if (xInput < 0 && facingRight || xInput > 0 && !facingRight)
-            Flip();
-    }
-
-    private void Flip()
-    {
-        facingDir = facingDir * -1;
-        transform.Rotate(0, 180, 0);
-        facingRight = !facingRight;
-    }
-
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireSphere(enemyCheck.position, enemyCheckRadius);
-        Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
-        Gizmos.DrawLine(transform.position, new Vector2(transform.position.x + (wallCheckDistance * facingDir), transform.position.y));
     }
 }

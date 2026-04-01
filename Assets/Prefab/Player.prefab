@@ -36,6 +36,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4713804986907622661
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -54,6 +55,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -75,9 +78,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -113432309
   m_SortingLayer: 6
   m_SortingOrder: 1
+  m_MaskInteraction: 0
   m_Sprite: {fileID: -57455926, guid: 40de9a8703e2e5a47882b0b86451c741, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -87,7 +92,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &4707727076600335693
 Animator:
@@ -166,6 +170,11 @@ GameObject:
   - component: {fileID: 3574195766951587305}
   - component: {fileID: 8374222641309721335}
   - component: {fileID: 5545925356606802984}
+  - component: {fileID: 3816928042767269251}
+  - component: {fileID: 6007532595391573974}
+  - component: {fileID: 284998145032160021}
+  - component: {fileID: 2874736956764528306}
+  - component: {fileID: 6724502370245630675}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -193,7 +202,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &3574195766951587305
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -204,8 +213,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_GravityScale: 4.5
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -267,35 +276,95 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ae7e81ec568f544d9c4e23bf63723be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fruitDrop: {fileID: 7903211317508286310, guid: 53c2f66533c54994da7ca7ca8208b649, type: 3}
-  gameDifficulty: 2
-  moveSpeed: 8
-  jumpForce: 14
-  doubleJumpForce: 11
-  bufferJumpWindow: 0.25
-  coyoteJumpWindow: 0.2
-  wallJumpDuration: 0.6
-  wallJumpForce: {x: 7, y: 14}
-  knockbackDuration: 0.6
-  knockbackPower: {x: 5, y: 7}
-  groundCheckDistance: 0.8
-  wallCheckDistance: 0.65
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 8
-  enemyCheck: {fileID: 8632417326840239005}
-  enemyCheckRadius: 0.5
-  whatIsEnemy:
-    serializedVersion: 2
-    m_Bits: 64
+--- !u!114 &3816928042767269251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8006385128288855282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc2c5c29be97e9b5ab2ba0863c9188e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationController
   animators:
   - {fileID: 22100000, guid: 79886fd0d187089478291ad08b2663f9, type: 2}
   - {fileID: 22100000, guid: d982f12b72da97a49bc29db46768ca43, type: 2}
   - {fileID: 22100000, guid: 4695a1a1eae288742ac1759ef66864cf, type: 2}
   - {fileID: 22100000, guid: 49163c4694977794fb039ab3a7f81e7b, type: 2}
-  deathVfx: {fileID: 6536056472138906537, guid: 2d31a91cc9973a14ca77d4fb69f6e545, type: 3}
-  dustFx: {fileID: 2438366417946197896}
   skinId: 0
+--- !u!114 &6007532595391573974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8006385128288855282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6728e5fc8edd1b87f9a1535683198c78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCollisionDetector
+  groundCheckDistance: 0.8
+  wallCheckDistance: 0.9
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 8
+  enemyCheck: {fileID: 8632417326840239005}
+  enemyCheckRadius: 0.4
+  whatIsEnemy:
+    serializedVersion: 2
+    m_Bits: 64
+--- !u!114 &284998145032160021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8006385128288855282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 456fc706bd5414a7bb9e161bb7cdc8dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealthController
+  fruitDrop: {fileID: 0}
+  gameDifficulty: 1
+  knockbackDuration: 1
+  knockbackPower: {x: 3, y: 7}
+  deathVfx: {fileID: 6536056472138906537, guid: 2d31a91cc9973a14ca77d4fb69f6e545, type: 3}
+--- !u!114 &2874736956764528306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8006385128288855282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cf55ca56d6aada278cba4491b5ce9f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerJumpController
+  jumpForce: 20
+  doubleJumpForce: 15
+  bufferJumpWindow: 0.25
+  coyoteJumpWindow: 0.5
+  wallJumpDuration: 0.6
+  wallJumpForce: {x: 10, y: 15}
+--- !u!114 &6724502370245630675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8006385128288855282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93540b5ea9250e195a25ceba41d50471, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementController
+  moveSpeed: 5
+  dustFx: {fileID: 2833367604368862582, guid: 1702a55fc3a30a34fae77db0bd16da2d, type: 3}
 --- !u!1001 &469770214971396862
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -388,10 +457,5 @@ PrefabInstance:
 --- !u!4 &432262816443513301 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 250865914144385835, guid: 1702a55fc3a30a34fae77db0bd16da2d, type: 3}
-  m_PrefabInstance: {fileID: 469770214971396862}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &2438366417946197896 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 2833367604368862582, guid: 1702a55fc3a30a34fae77db0bd16da2d, type: 3}
   m_PrefabInstance: {fileID: 469770214971396862}
   m_PrefabAsset: {fileID: 0}
