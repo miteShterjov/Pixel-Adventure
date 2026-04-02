@@ -315,7 +315,7 @@ MonoBehaviour:
   enemyCheckRadius: 0.4
   whatIsEnemy:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 320
 --- !u!114 &284998145032160021
 MonoBehaviour:
   m_ObjectHideFlags: 0
