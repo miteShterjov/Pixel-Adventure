@@ -138,6 +138,7 @@ public class Player : MonoBehaviour
                 {
                     AudioManager.instance.PlaySFX(1);
                     newEnemy.Die();
+                    jumpController.EnableDoubleJump();
                     jumpController.JumpButton();
                 }
             }

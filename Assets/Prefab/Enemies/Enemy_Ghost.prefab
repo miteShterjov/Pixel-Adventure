@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 7673427873648725619}
   - component: {fileID: 8789014951085889377}
   - component: {fileID: 2594439179954754581}
+  - component: {fileID: -8229821547925583263}
   m_Layer: 8
   m_Name: Enemy_Ghost
   m_TagString: Untagged
@@ -347,3 +348,15 @@ MonoBehaviour:
   yMinDistance: 3
   yMaxDistance: 5
   target: {fileID: 0}
+--- !u!114 &-8229821547925583263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4646336506875874372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 862c562e93a6d89aebb2b6b5ed4303e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RandomIdleAnim

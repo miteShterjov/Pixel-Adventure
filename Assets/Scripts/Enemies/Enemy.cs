@@ -141,4 +141,7 @@ public class Enemy : MonoBehaviour
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x + (wallCheckDistance * facingDir), transform.position.y));
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x + (playerDetectionDistance * facingDir), transform.position.y));
     }
+    protected void SetLinearVelocity(float xVelocity, float yVelocity) => rb.linearVelocity = new Vector2(xVelocity, yVelocity);
+    
+    protected void SetLinearVelocity(Vector2 velocity) => rb.linearVelocity = velocity;
 }

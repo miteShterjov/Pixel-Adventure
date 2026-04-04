@@ -31,6 +31,8 @@ public class PlayerJumpController : MonoBehaviour
     public bool IsWallJumping => isWallJumping;
     public bool IsAirborne => isAirborne;
 
+    public void EnableDoubleJump() => canDoubleJump = true;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();

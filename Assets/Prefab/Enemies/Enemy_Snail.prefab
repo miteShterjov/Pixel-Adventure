@@ -105,6 +105,7 @@ GameObject:
   - component: {fileID: 3903720568857160463}
   - component: {fileID: 3060097020590963544}
   - component: {fileID: 2457784007740366679}
+  - component: {fileID: -6033360955940546826}
   m_Layer: 6
   m_Name: Enemy_Snail
   m_TagString: Untagged
@@ -131,6 +132,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8079232134302205664
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -148,6 +150,9 @@ SpriteRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -169,9 +174,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1299910229
   m_SortingLayer: 4
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Sprite: {fileID: -3906221422484359612, guid: 35d33412cf90ccf4f9e1b5100ba41640, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -181,7 +188,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &3937740919153684905
 Animator:
@@ -253,7 +259,7 @@ BoxCollider2D:
   m_EdgeRadius: 0
 --- !u!50 &3060097020590963544
 Rigidbody2D:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -264,8 +270,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -306,6 +312,18 @@ MonoBehaviour:
   groundCheck: {fileID: 1480704182645869562}
   bodyPrefab: {fileID: 4089150288587910960, guid: a8fdbb61f7eb5a54697d7ba3a0ceef6a, type: 3}
   maxSpeed: 10
+--- !u!114 &-6033360955940546826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1806469674519370746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 862c562e93a6d89aebb2b6b5ed4303e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RandomIdleAnim
 --- !u!1 &7768921869646263198
 GameObject:
   m_ObjectHideFlags: 0

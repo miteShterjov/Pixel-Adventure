@@ -26,7 +26,7 @@ public class Enemy_Bullet_Bee : MonoBehaviour
 
     private void Update()
     {
-        if (wayPoints.Count <= 0)
+        if (wayPoints.Count <= 0 || wayIndex >= wayPoints.Count)
             return;
 
         transform.position = Vector2.MoveTowards(transform.position, wayPoints[wayIndex], speed * Time.deltaTime);
@@ -34,7 +34,10 @@ public class Enemy_Bullet_Bee : MonoBehaviour
         if (Vector2.Distance(transform.position, wayPoints[wayIndex]) < .1f)
         {
             wayIndex++;
-            transform.up = transform.position - wayPoints[wayIndex];
+            if (wayIndex < wayPoints.Count)
+            {
+                transform.up = transform.position - wayPoints[wayIndex];
+            }
         }
     }
 
@@ -65,5 +68,18 @@ public class Enemy_Bullet_Bee : MonoBehaviour
     {
         GameObject newFx = Instantiate(pickupVfx, transform.position, Quaternion.identity);
         newFx.transform.localScale = new Vector3(.6f, .6f, .6f);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        float destroyDelay = .2f;
+        Player player = collision.gameObject.GetComponent<Player>();
+
+        if (player != null)
+        {
+            player.Damage();
+            player.Knockback(transform.position.x);
+            Destroy(gameObject, destroyDelay);
+        }
     }
 }
