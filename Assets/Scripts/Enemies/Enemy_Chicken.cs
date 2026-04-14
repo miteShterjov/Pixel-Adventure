@@ -7,9 +7,13 @@ public class Enemy_Chicken : Enemy
     [Header("Chicken details")]
     [SerializeField] private float aggroDuration;
     [SerializeField] private float detectionRange;
+    [SerializeField] private float attackCooldown = 1.5f;
+    [SerializeField] private float speedIncreaseRate = 0.5f;
 
     private float aggroTimer;
-    private bool playerDetected;
+    private float lastTimeAttacked;
+    private float currentMoveSpeed;
+    private bool isChasing;
     private bool canFlip = true;
 
     protected override void Update()
@@ -21,14 +25,29 @@ public class Enemy_Chicken : Enemy
         if (isDead)
             return;
 
-        if (playerDetected)
+        bool canAttack = Time.time > lastTimeAttacked + attackCooldown;
+
+        if (isPlayerDetected)
         {
             canMove = true;
             aggroTimer = aggroDuration;
+
+            if (!isChasing && canAttack)
+                Attack();
+
+            if (isChasing)
+            {
+                // Gradually increase speed while chasing and player is in range
+                currentMoveSpeed += speedIncreaseRate * Time.deltaTime;
+            }
         }
 
         if (aggroTimer < 0)
+        {
             canMove = false;
+            isChasing = false;
+            currentMoveSpeed = moveSpeed;
+        }
 
         HandleMovement();
 
@@ -46,14 +65,22 @@ public class Enemy_Chicken : Enemy
         }
     }
 
+    private void Attack()
+    {
+        lastTimeAttacked = Time.time;
+        isChasing = true;
+        currentMoveSpeed = moveSpeed;
+    }
+
     private void HandleMovement()
     {
-        if (canMove == false)
-            return;
+        if (canMove == false) return;
+        if (player == null) return;
 
-        HandleFlip(player.transform.position.x);
+        if (player != null) HandleFlip(player.transform.position.x);
 
-        rb.linearVelocity = new Vector2(moveSpeed * facingDir, rb.linearVelocity.y);
+        float speedToUse = isChasing ? currentMoveSpeed : moveSpeed;
+        rb.linearVelocity = new Vector2(speedToUse * facingDir, rb.linearVelocity.y);
     }
 
     protected override void HandleFlip(float xValue)

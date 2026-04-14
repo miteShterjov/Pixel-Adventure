@@ -13,6 +13,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] protected float idleDuration = 1.5f;
     protected float idleTimer;
     protected bool canMove = true;
+    [SerializeField] private bool isFacingRight;
 
 
     [Header("Death details")]
@@ -42,6 +43,8 @@ public class Enemy : MonoBehaviour
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         colliders = GetComponentsInChildren<Collider2D>();
+
+        if (isFacingRight && facingDir == -1) Flip();
     }
 
     protected virtual void Start()
@@ -70,6 +73,8 @@ public class Enemy : MonoBehaviour
 
         if (isDead)
             HandleDeathRotation();
+
+        
     }
 
     public virtual void Die()

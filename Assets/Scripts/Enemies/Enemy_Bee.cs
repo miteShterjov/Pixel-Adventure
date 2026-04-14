@@ -9,6 +9,7 @@ public class Enemy_Bee : Enemy
     [SerializeField] private float bulletSpeed = 7;
     [SerializeField] private float bulletLifeTime = 2.5f;
     [SerializeField] private float attackCooldown = 1.5f;
+    [SerializeField] private float dieFallSpeed = -5;
     private float lastTimeAttacked;
 
     [SerializeField] private float offset = .25f;
@@ -97,5 +98,14 @@ public class Enemy_Bee : Enemy
     protected override void HandleAnimator()
     {
         //Keep it empty,unless you need to update paratemtrs
+    }
+
+    public override void Die()
+    {
+        rb.linearVelocity = Vector2.zero;
+        
+        // Call base but then override the upward velocity with downward
+        base.Die();
+        canMove = false;
     }
 }

@@ -6342,6 +6342,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_Snail
       objectReference: {fileID: 0}
+    - target: {fileID: 1806469674519370746, guid: 794dc1cb243753a40a403310bff227c7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2457784007740366679, guid: 794dc1cb243753a40a403310bff227c7, type: 3}
       propertyPath: isFacingRight
       value: 1
@@ -16354,6 +16358,7 @@ Transform:
   - {fileID: 345064608718530531}
   - {fileID: 535820369}
   - {fileID: 1001081628}
+  - {fileID: 655035541}
   m_Father: {fileID: 1363664593}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &590598419 stripped
@@ -16370,6 +16375,11 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: 6802593381344241092, guid: 6c96466d639c4884cb7ee1115e86890b, type: 3}
   m_PrefabInstance: {fileID: 438986120}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &655035541 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2787877185283726626, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
+  m_PrefabInstance: {fileID: 1177240256}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &674181309
 PrefabInstance:
@@ -16740,6 +16750,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_Mushroom
       objectReference: {fileID: 0}
+    - target: {fileID: 2255476668753454398, guid: 7e658f97c2f0fb141a3fa2662918d6fb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4892935521419915859, guid: 7e658f97c2f0fb141a3fa2662918d6fb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 16.98
@@ -16902,6 +16916,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_BlueBird (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6627137589567216740, guid: 5b645fbb8c400e5cd9bcf316c86a22b1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -16932,7 +16950,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1091356531
 Transform:
   m_ObjectHideFlags: 0
@@ -16969,6 +16987,67 @@ Transform:
   - {fileID: 1709392967}
   m_Father: {fileID: 1363664593}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1177240256
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 583424490}
+    m_Modifications:
+    - target: {fileID: 1776862080168603042, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
+      propertyPath: m_Name
+      value: Enemy_Radish
+      objectReference: {fileID: 0}
+    - target: {fileID: 1776862080168603042, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2787877185283726626, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 8.645264
+      objectReference: {fileID: 0}
+    - target: {fileID: 2787877185283726626, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.590027
+      objectReference: {fileID: 0}
+    - target: {fileID: 2787877185283726626, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2787877185283726626, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2787877185283726626, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2787877185283726626, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2787877185283726626, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2787877185283726626, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2787877185283726626, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2787877185283726626, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2c0048eb69c67b4cbb004635835dd1fa, type: 3}
 --- !u!1001 &1187206173
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17046,7 +17125,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1296904793
 Transform:
   m_ObjectHideFlags: 0
@@ -18767,6 +18846,10 @@ PrefabInstance:
     - target: {fileID: 6627137589567216740, guid: 5b645fbb8c400e5cd9bcf316c86a22b1, type: 3}
       propertyPath: m_Name
       value: Enemy_BlueBird
+      objectReference: {fileID: 0}
+    - target: {fileID: 6627137589567216740, guid: 5b645fbb8c400e5cd9bcf316c86a22b1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

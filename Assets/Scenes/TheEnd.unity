@@ -405,7 +405,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Made by following a great tutorial from Udemy, created by Unity Alex Dev.
+  m_text: Made by following a great tutorial from Udemy, by Unity Alex Dev. Learned
+    a lot.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: cdfb6ba200b62ed46819694d70a4437e, type: 2}
   m_sharedMaterial: {fileID: -91572077461226718, guid: cdfb6ba200b62ed46819694d70a4437e, type: 2}
@@ -980,6 +981,10 @@ PrefabInstance:
     - target: {fileID: 7965520960549696612, guid: 04a85c5342a90724e9f5bdf2c24356f1, type: 3}
       propertyPath: m_Name
       value: FadeImage
+      objectReference: {fileID: 0}
+    - target: {fileID: 7965520960549696612, guid: 04a85c5342a90724e9f5bdf2c24356f1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8825649115323208116, guid: 04a85c5342a90724e9f5bdf2c24356f1, type: 3}
       propertyPath: m_Pivot.x

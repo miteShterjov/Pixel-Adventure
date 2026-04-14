@@ -9,6 +9,7 @@ public class Enemy_Plant : Enemy
     [SerializeField] private Transform gunPoint;
     [SerializeField] private float bulletSpeed = 7;
     [SerializeField] private float attackCooldown = 1.5f;
+    
     private float lastTimeAttacked;
 
     protected override void Update()
@@ -17,8 +18,9 @@ public class Enemy_Plant : Enemy
 
         bool canAttack = Time.time > lastTimeAttacked + attackCooldown;
 
-        if (isPlayerDetected && canAttack)
-            Attack();
+        if (isPlayerDetected && canAttack) Attack();
+
+        
     }
 
     private void Attack()

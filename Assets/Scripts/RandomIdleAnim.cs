@@ -7,14 +7,13 @@ public class RandomIdleAnim : MonoBehaviour
         void Awake()
         {
             _animator = GetComponent<Animator>();
-            
         }
 
         void Start()
         {
             if (_animator == null)
             {
-                Debug.LogError("No Animator found in RandomIdleAnim Class on Ghost Enemy.");
+                Debug.LogError("No Animator found in RandomIdleAnim Class on" + name);
                 return;
             }
 

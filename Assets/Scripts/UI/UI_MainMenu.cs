@@ -31,6 +31,12 @@ public class UI_MainMenu : MonoBehaviour
         fadeEffect.ScreenFade(0, 1.5f);
     }
 
+    private void Update()
+    {
+        if (PlayerPrefs.GetInt("ContinueLevelNumber", 0) == 0) continueButton.SetActive(false);
+    }
+            
+
     public void SwitchUI(GameObject uiToEnable)
     {
         foreach (GameObject ui in uiElements)
@@ -45,7 +51,9 @@ public class UI_MainMenu : MonoBehaviour
 
     public void NewGame()
     {
+
         fadeEffect.ScreenFade(1, 1.5f,LoadLevelScene);
+        if (Time.timeScale == 0f) Time.timeScale = 1f;
         AudioManager.instance.PlaySFX(4);
     }
 
@@ -67,9 +75,16 @@ public class UI_MainMenu : MonoBehaviour
         SkinManager.instance.SetSkinId(lastSavedSkin);
 
         DifficultyManager.instance.LoadDifficulty(difficultyIndex);
+
+        if (levelToLoad == 0)
+        {
+            continueButton.SetActive(false);
+            return;
+        }
+
+        if (Time.timeScale == 0f) Time.timeScale = 1f;
         SceneManager.LoadScene("Level_" + levelToLoad);
         AudioManager.instance.PlaySFX(4);
-
     }
 
     public void MoveCameraToMainMenu()

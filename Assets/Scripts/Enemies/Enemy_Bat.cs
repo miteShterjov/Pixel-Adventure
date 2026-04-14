@@ -101,8 +101,6 @@ public class Enemy_Bat : Enemy
         
         // Call base but then override the upward velocity with downward
         base.Die();
-        
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, dieFallSpeed);
         canMove = false;
     }
 

@@ -23,11 +23,24 @@ public class PlayerManager : MonoBehaviour
 
     private void Start()
     {
-        if (respawnPoint == null)
-            respawnPoint = FindFirstObjectByType<StartPoint>().transform;
+        if (respawnPoint == null) respawnPoint = FindFirstObjectByType<StartPoint>().transform;
 
-        if (player == null)
-            player = FindFirstObjectByType<Player>();
+        if (player == null) player = FindFirstObjectByType<Player>();
+        if (player == null) SpawnPlayerAtStart();
+    }
+
+    private void Update()
+    {
+      if (player != null && player.GetComponent<Rigidbody2D>().gravityScale == 0) 
+      {
+        player.GetComponent<Rigidbody2D>().gravityScale = 3.5f;  
+      }
+    }
+
+    private void SpawnPlayerAtStart()
+    {
+        DifficultyManager difficultyManager = DifficultyManager.instance;
+        StartCoroutine(RespawnCourutine());
     }
 
     public void RespawnPlayer()
@@ -46,6 +59,7 @@ public class PlayerManager : MonoBehaviour
 
         GameObject newPlayer = Instantiate(playerPrefab, respawnPoint.position, Quaternion.identity);
         player = newPlayer.GetComponent<Player>();
+        
         OnPlayerRespawn?.Invoke();
     }
 

@@ -7,7 +7,6 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Source")]
     [SerializeField] private AudioSource[] sfx;
     [SerializeField] private AudioSource[] bgm;
-
     [SerializeField] private int bgmIndex;
     private void Awake()
     {

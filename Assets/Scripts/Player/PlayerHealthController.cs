@@ -6,7 +6,6 @@ public class PlayerHealthController : MonoBehaviour
     [SerializeField] private GameObject fruitDrop;
     [SerializeField] private DifficultyType gameDifficulty;
     private GameManager gameManager;
-
     private Rigidbody2D rb;
     private CapsuleCollider2D cd;
     private PlayerAnimationController animationController;

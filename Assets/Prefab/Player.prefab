@@ -328,7 +328,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 456fc706bd5414a7bb9e161bb7cdc8dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealthController
-  fruitDrop: {fileID: 0}
+  fruitDrop: {fileID: 7903211317508286310, guid: 53c2f66533c54994da7ca7ca8208b649, type: 3}
   gameDifficulty: 1
   knockbackDuration: 1
   knockbackPower: {x: 3, y: 7}

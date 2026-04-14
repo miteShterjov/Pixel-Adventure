@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class UI_InGame : MonoBehaviour
@@ -27,8 +28,7 @@ public class UI_InGame : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-            PauseButton();
+        if (Keyboard.current.escapeKey.wasPressedThisFrame) PauseButton();
     }
 
     public void PauseButton()
