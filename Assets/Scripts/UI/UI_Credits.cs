@@ -1,47 +1,48 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class UI_Credits : MonoBehaviour
+namespace UI
 {
-    private UI_FadeEffect fadeEffect;
-    [SerializeField] private RectTransform rectT;
-    [SerializeField] private float scrollSpeed = 200;
-    [SerializeField] private float offScreenPosition = 1800;
-
-    [SerializeField] private string mainMenuSceneName = "MainMenu";
-    private bool creditsSkipped;
-
-    private void Awake()
+    public class UICredits : MonoBehaviour
     {
-        fadeEffect = GetComponentInChildren<UI_FadeEffect>();
-        fadeEffect.ScreenFade(0, 2);
-    }
+        [Header("Credits Scrolling")]
+        [SerializeField] private RectTransform rectT;
+        [SerializeField] private float scrollSpeed = 200;
+        [SerializeField] private float offScreenPosition = 1800;
+        [SerializeField] private string mainMenuSceneName = "MainMenu";
+        
+        private bool creditsSkipped;
+        private UIFadeEffect fadeEffect;
 
-    private void Update()
-    {
-        rectT.anchoredPosition += Vector2.up * scrollSpeed * Time.deltaTime;
-
-        if (rectT.anchoredPosition.y > offScreenPosition)
-            GoToMainMenu();
-    }
-
-    public void SkipCredits()
-    {
-        if (creditsSkipped == false)
+        private void Awake()
         {
-            scrollSpeed *= 10;
-            creditsSkipped = true;
+            fadeEffect = GetComponentInChildren<UIFadeEffect>();
+            if (!fadeEffect) Debug.LogError("No Fade Effect on Credits Screen");
+            fadeEffect.ScreenFade(0, 1.5f);
         }
-        else
+
+        private void Update()
         {
-            GoToMainMenu();
+            rectT.anchoredPosition += Vector2.up * (scrollSpeed * Time.deltaTime);
+
+            if (rectT.anchoredPosition.y > offScreenPosition) GoToMainMenu();
         }
-    }
 
-    private void GoToMainMenu() => fadeEffect.ScreenFade(1, 1, SwitchToMenuScene);
+        public void SkipCredits()
+        {
+            if (creditsSkipped == false)
+            {
+                scrollSpeed *= 10;
+                creditsSkipped = true;
+            }
+            else
+            {
+                GoToMainMenu();
+            }
+        }
 
-    private void SwitchToMenuScene()
-    {
-        SceneManager.LoadScene(mainMenuSceneName);
+        private void GoToMainMenu() => fadeEffect.ScreenFade(1, 1, SwitchToMenuScene);
+
+        private void SwitchToMenuScene() => SceneManager.LoadScene(mainMenuSceneName);
     }
 }

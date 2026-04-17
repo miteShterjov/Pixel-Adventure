@@ -1,45 +1,50 @@
 using System.Collections;
 using UnityEngine;
 
-public class Trap_Fire : MonoBehaviour
+namespace Traps
 {
-    [SerializeField] private float offDuration;
-    [SerializeField] private Trap_FireButton fireButton;
-    private Animator anim;
-    private CapsuleCollider2D fireCollider;
-    private bool isActive;
-
-    private void Awake()
+    public class TrapFire : MonoBehaviour
     {
-        anim = GetComponent<Animator>();
-        fireCollider = GetComponent<CapsuleCollider2D>();
-    }
-    private void Start()
-    {
-        if (fireButton == null)
-            Debug.LogWarning("You don't have fire button on " + gameObject.name + "!");
+        [SerializeField] private float offDuration;
+        [SerializeField] private TrapFireButton fireButton;
+        
+        private Animator anim;
+        private CapsuleCollider2D fireCollider;
+        private bool isActive;
+        
+        private static readonly int ActiveParam = Animator.StringToHash("active");
 
-        SetFire(true);
-    }
+        private void Awake()
+        {
+            anim = GetComponent<Animator>();
+            fireCollider = GetComponent<CapsuleCollider2D>();
+        }
+        
+        private void Start()
+        {
+            if (!fireButton) Debug.LogWarning("You don't have fire button on " + gameObject.name + "!");
+            SetFire(true);
+        }
 
-    public void SwitchOffFire()
-    {
-        if (isActive == false)
-            return;
+        public void SwitchOffFire()
+        {
+            if (!isActive) return;
 
-        StartCoroutine(FireCourtine());
-    }
-    private IEnumerator FireCourtine()
-    {
-        SetFire(false);
-        yield return new WaitForSeconds(offDuration);
-        SetFire(true);
-    }
+            StartCoroutine(FireCo());
+        }
+        
+        private IEnumerator FireCo()
+        {
+            SetFire(false);
+            yield return new WaitForSeconds(offDuration);
+            SetFire(true);
+        }
 
-    private void SetFire(bool active)
-    {
-        anim.SetBool("active", active);
-        fireCollider.enabled = active;
-        isActive = active;
+        private void SetFire(bool active)
+        {
+            anim.SetBool(ActiveParam, active);
+            fireCollider.enabled = active;
+            isActive = active;
+        }
     }
 }

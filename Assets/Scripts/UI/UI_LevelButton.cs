@@ -1,53 +1,55 @@
+using Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class UI_LevelButton : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private TextMeshProUGUI levelNumberText;
-
-    [SerializeField] private TextMeshProUGUI bestTimeText;
-    [SerializeField] private TextMeshProUGUI fruitsText;
-
-    private int levelIndex;
-    private string sceneName;
-
-    public void SetupButton(int newLevelIndex)
+    public class UILevelButton : MonoBehaviour
     {
-        levelIndex = newLevelIndex;
+        [Header("Level info")]
+        [SerializeField] private TextMeshProUGUI levelNumberText;
+        [SerializeField] private TextMeshProUGUI bestTimeText;
+        [SerializeField] private TextMeshProUGUI fruitsText;
+        
+        private int levelIndex;
+        private string sceneName;
 
-        levelNumberText.text = "Level " + levelIndex;
-        sceneName = "Level_" + levelIndex;
+        public void SetupButton(int newLevelIndex)
+        {
+            levelIndex = newLevelIndex;
 
-        bestTimeText.text = TimerInfoText();
-        fruitsText.text = FruitsInfoText();
-    }
+            levelNumberText.text = "Level " + levelIndex;
+            sceneName = "Level_" + levelIndex;
 
-    public void LoadLevel()
-    {
-        AudioManager.instance.PlaySFX(4);
+            bestTimeText.text = TimerInfoText();
+            fruitsText.text = FruitsInfoText();
+        }
 
-        int difficultyIndex = ((int)DifficultyManager.instance.difficulty);
-        PlayerPrefs.SetInt("GameDifficulty", difficultyIndex);
-        SceneManager.LoadScene(sceneName);
-    }
+        public void LoadLevel()
+        {
+            AudioManager.Instance.PlaySfx(4);
 
-    private string FruitsInfoText()
-    {
-        int totalFruits = PlayerPrefs.GetInt("Level" + levelIndex + "TotalFruits",0);
-        string totalFruitsText = totalFruits == 0 ? "?" : totalFruits.ToString();
+            int difficultyIndex = ((int)DifficultyManager.Instance.difficulty);
+            PlayerPrefs.SetInt("GameDifficulty", difficultyIndex);
+            SceneManager.LoadScene(sceneName);
+        }
 
-        int fruitsCollected = PlayerPrefs.GetInt("Level" + levelIndex + "FruitsCollected");
+        private string FruitsInfoText()
+        {
+            int totalFruits = PlayerPrefs.GetInt("Level" + levelIndex + "TotalFruits",0);
+            string totalFruitsText = totalFruits == 0 ? "?" : totalFruits.ToString();
 
-        return "Fruits: " + fruitsCollected + " / " + totalFruitsText;
+            int fruitsCollected = PlayerPrefs.GetInt("Level" + levelIndex + "FruitsCollected");
 
-    }
+            return "Fruits: " + fruitsCollected + " / " + totalFruitsText;
+        }
 
-    private string TimerInfoText()
-    {
-        float timerValue = PlayerPrefs.GetFloat("Level" + levelIndex + "BestTime", 99);
+        private string TimerInfoText()
+        {
+            float timerValue = PlayerPrefs.GetFloat("Level" + levelIndex + "BestTime", 99);
 
-        return "Best Time: " + timerValue.ToString("00");
-
+            return "Best Time: " + timerValue.ToString("00");
+        }
     }
 }

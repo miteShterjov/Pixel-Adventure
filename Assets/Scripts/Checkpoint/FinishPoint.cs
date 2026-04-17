@@ -1,22 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
+using Managers;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class FinishPoint : MonoBehaviour
+namespace Checkpoint
 {
-    private Animator anim => GetComponent<Animator>();
-
-    private void OnTriggerEnter2D(Collider2D collision)
+    [RequireComponent(typeof(Animator))]
+    public class FinishPoint : MonoBehaviour
     {
-        Player player = collision.GetComponent<Player>();
+        private Animator anim;
+        private static readonly int ActivateTrigger = Animator.StringToHash("activate");
 
-        if (player != null)
+        private void Awake()
         {
-            AudioManager.instance.PlaySFX(2);
+            anim = GetComponent<Animator>();
+        }
 
-            anim.SetTrigger("activate");
-            GameManager.instance.LevelFinished();
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (!collision.GetComponent<Player.Player>()) return;
+            
+            AudioManager.Instance.PlaySfx(2);
+            anim.SetTrigger(ActivateTrigger);
+            GameManager.Instance.LevelFinished();
         }
     }
 }

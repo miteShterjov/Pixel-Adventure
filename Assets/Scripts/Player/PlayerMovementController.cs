@@ -1,77 +1,64 @@
 using UnityEngine;
 
-public class PlayerMovementController : MonoBehaviour
+namespace Player
 {
-    [Header("Movement")]
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private ParticleSystem dustFx;
-
-    private Rigidbody2D rb;
-    private PlayerCollisionDetector collisionDetector;
-
-    private Vector2 moveInput;
-    private bool facingRight = true;
-    private int facingDir = 1;
-    private bool isWallJumping;
-
-    public int FacingDir => facingDir;
-    public bool FacingRight => facingRight;
-    public Vector2 MoveInput => moveInput;
-
-    private void Awake()
+    public class PlayerMovementController : MonoBehaviour
     {
-        rb = GetComponent<Rigidbody2D>();
-        collisionDetector = GetComponent<PlayerCollisionDetector>();
-    }
+        public int FacingDir { get; private set; } = 1;
+        public Vector2 MoveInput => moveInput;
+        
+        [Header("Movement")]
+        [SerializeField] private float moveSpeed;
+        [SerializeField] private ParticleSystem dustFx;
 
-    public void HandleInput(Vector2 moveInput)
-    {
-        this.moveInput = moveInput;
-    }
+        private Rigidbody2D rb;
+        private PlayerCollisionDetector collisionDetector;
+        private Vector2 moveInput;
+        private bool isWallJumping;
+        private bool FacingRight { get; set; } = true;
 
-    public void SetWallJumpingState(bool state)
-    {
-        isWallJumping = state;
-    }
+        private void Awake()
+        {
+            rb = GetComponent<Rigidbody2D>();
+            collisionDetector = GetComponent<PlayerCollisionDetector>();
+        }
 
-    public void HandleMovement()
-    {
-        if (collisionDetector.IsWallDetected)
-            return;
+        public void HandleInput(Vector2 input) => moveInput = input;
+        
+        public void SetWallJumpingState(bool state) => isWallJumping = state;
+        
+        public void HandleMovement()
+        {
+            if (collisionDetector.IsWallDetected) return;
 
-        if (isWallJumping)
-            return;
+            if (isWallJumping) return;
 
-        rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
-    }
+            rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
+        }
 
-    public void HandleWallSlide(Vector2 wallSlideInput)
-    {
-        bool canWallSlide = collisionDetector.IsWallDetected && rb.linearVelocity.y < 0;
-        float yModifer = wallSlideInput.y < 0 ? 1 : .05f;
+        public void HandleWallSlide(Vector2 wallSlideInput)
+        {
+            bool canWallSlide = collisionDetector.IsWallDetected && rb.linearVelocity.y < 0;
+            float yModifer = wallSlideInput.y < 0 ? 1 : .05f;
 
-        if (canWallSlide == false)
-            return;
+            if (!canWallSlide) return;
 
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * yModifer);
-    }
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * yModifer);
+        }
 
-    public void HandleFlip()
-    {
-        if (moveInput.x < 0 && facingRight || moveInput.x > 0 && !facingRight)
-            Flip();
-    }
+        public void HandleFlip()
+        {
+            if (moveInput.x < 0 && FacingRight || moveInput.x > 0 && !FacingRight) Flip();
+        }
 
-    public void Flip()
-    {
-        facingDir = facingDir * -1;
-        transform.Rotate(0, 180, 0);
-        facingRight = !facingRight;
-        collisionDetector.SetFacingDir(facingDir);
-    }
+        public void Flip()
+        {
+            FacingDir = FacingDir * -1;
+            transform.Rotate(0, 180, 0);
+            FacingRight = !FacingRight;
+            collisionDetector.SetFacingDir(FacingDir);
+        }
 
-    public void PlayDustFx()
-    {
-        dustFx.Play();
+        public void PlayDustFx() => dustFx.Play();
     }
 }

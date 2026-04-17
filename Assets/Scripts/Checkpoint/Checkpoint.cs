@@ -1,34 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
+using Managers;
 using UnityEngine;
 
-public class Checkpoint : MonoBehaviour
+namespace Checkpoint
 {
-    private Animator anim => GetComponent<Animator>();
-    private bool active;
-
-    [SerializeField] private bool canBeReactivated;
-
-    private void Start()
+    [RequireComponent(typeof(Animator))]
+    public class Checkpoint : MonoBehaviour
     {
-        canBeReactivated = GameManager.instance.canReactivate;
-    }
+        private Animator anim;
+        private bool active;
+        private static readonly int ActivateTrigger = Animator.StringToHash("activate");
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (active && canBeReactivated == false)
-            return;
+        [SerializeField] private bool canBeReactivated;
 
-        Player player = collision.GetComponent<Player>();
+        private void Awake()
+        {
+            anim = GetComponent<Animator>();
+        }
 
-        if (player != null)
-            ActivateCheckpoint();
-    }
+        private void Start()
+        {
+            canBeReactivated = GameManager.Instance.canReactivate;
+        }
 
-    private void ActivateCheckpoint()
-    {
-        active = true;
-        anim.SetTrigger("activate");
-        PlayerManager.instance.UpdateRespawnPosition(transform);
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (active && !canBeReactivated) return;
+            if (collision.GetComponent<Player.Player>()) ActivateCheckpoint();
+        }
+
+        private void ActivateCheckpoint()
+        {
+            active = true;
+            anim.SetTrigger(ActivateTrigger);
+            PlayerManager.Instance.UpdateRespawnPosition(transform);
+        }
     }
 }

@@ -1,34 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy_Bullet : MonoBehaviour
+namespace Enemies
 {
-    [SerializeField] private string playerLyaerName = "Player";
-    [SerializeField] private string groundLyaerName = "Ground";
-    private Rigidbody2D rb;
-    private SpriteRenderer sr;
-
-    private void Awake()
+    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(SpriteRenderer))]
+    public class EnemyBullet : MonoBehaviour
     {
-        rb = GetComponent<Rigidbody2D>();
-        sr = GetComponent<SpriteRenderer>();
-    }
+        [Header( "Layer Names")]
+        [SerializeField] private string playerLayerName = "Player";
+        [SerializeField] private string groundLayerName = "Ground";
+        
+        private Rigidbody2D rb;
+        private SpriteRenderer sr;
 
-    public void FlipSprite() => sr.flipX = !sr.flipX;
-    public void SetVelocity(Vector2 velocity) => rb.linearVelocity = velocity;
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.layer == LayerMask.NameToLayer(playerLyaerName))
+        private void Awake()
         {
-            collision.GetComponent<Player>().Knockback(transform.position.x);
-            Destroy(gameObject);
+            rb = GetComponent<Rigidbody2D>();
+            sr = GetComponent<SpriteRenderer>();
         }
 
-        if (collision.gameObject.layer == LayerMask.NameToLayer(groundLyaerName))
+        public void FlipSprite() => sr.flipX = !sr.flipX;
+        public void SetVelocity(Vector2 velocity) => rb.linearVelocity = velocity;
+
+        private void OnTriggerEnter2D(Collider2D collision)
         {
-            Destroy(gameObject);
+            if (collision.gameObject.layer == LayerMask.NameToLayer(playerLayerName))
+            {
+                Player.Player player = collision.GetComponent<Player.Player>();
+                player.Damage();
+                player.Knockback(transform.position.x);
+                Destroy(gameObject);
+            }
+
+            if (collision.gameObject.layer == LayerMask.NameToLayer(groundLayerName)) Destroy(gameObject);
         }
     }
 }

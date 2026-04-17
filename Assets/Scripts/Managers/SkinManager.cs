@@ -1,21 +1,23 @@
-using UnityEditor.SearchService;
 using UnityEngine;
 
-public class SkinManager : MonoBehaviour
+namespace Managers
 {
-    public int choosenSkinId;
-    public static SkinManager instance;
-
-    private void Awake()
+    public class SkinManager : MonoBehaviour
     {
-        DontDestroyOnLoad(this.gameObject);
+        [Header("Skin")]
+        public int chosenSkinId;
+        public static SkinManager Instance;
 
-        if (instance == null)
-            instance = this;
-        else
-            Destroy(gameObject);
+        private void Awake()
+        {
+            DontDestroyOnLoad(this.gameObject);
+
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
+        }
+
+        public void SetSkinId(int id) => chosenSkinId = id;
+        
+        public int GetSkinId() => chosenSkinId;
     }
-
-    public void SetSkinId(int id) => choosenSkinId = id;
-    public int GetSkinId() => choosenSkinId;
 }

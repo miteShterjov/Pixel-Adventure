@@ -1,92 +1,85 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy_Snail : Enemy
+namespace Enemies
 {
-    [Header("Snail details")]
-    [SerializeField] private Enemy_SnailBody bodyPrefab;
-    [SerializeField] private float maxSpeed = 10;
-    private bool hasBody = true;
-
-    protected override void Update()
+    public class EnemySnail : Enemy
     {
-        base.Update();
+        [Header("Snail details")]
+        [SerializeField] private EnemySnailBody bodyPrefab;
+        [SerializeField] private float maxSpeed = 10;
+        
+        private bool hasBody = true;
+        private static readonly int WallHitParam = Animator.StringToHash("wallHit");
+        private static readonly int HitParam = Animator.StringToHash("hit");
 
-        if (isDead)
-            return;
-
-        HandleMovement();
-
-        if (isGrounded)
-            HandleTurnAround();
-    }
-
-    public override void Die()
-    {
-        if (hasBody)
+        protected override void Update()
         {
-            canMove = false;
-            hasBody = false;
-            anim.SetTrigger("hit");
+            base.Update();
 
-            rb.linearVelocity = Vector2.zero;
-            idleDuration = 0;
+            if (isDead) return;
+
+            HandleMovement();
+
+            if (isGrounded) HandleTurnAround();
         }
-        else if (canMove == false && hasBody == false)
+
+        public override void Die()
         {
-            anim.SetTrigger("hit");
-            canMove = true;
-            moveSpeed = maxSpeed;
+            if (hasBody)
+            {
+                canMove = false;
+                hasBody = false;
+                anim.SetTrigger(HitParam);
+
+                rb.linearVelocity = Vector2.zero;
+                idleDuration = 0;
+            }
+            
+            else if (!canMove && !hasBody)
+            {
+                anim.SetTrigger(HitParam);
+                canMove = true;
+                moveSpeed = maxSpeed;
+            }
+            else base.Die();
         }
-        else
+
+        protected override void Flip()
         {
-            base.Die();
+            base.Flip();
+
+            if (!hasBody) anim.SetTrigger(WallHitParam);
         }
         
-    }
-
-    private void HandleTurnAround()
-    {
-        bool canFlipFromLedge = !isGroundInfrontDetected && hasBody;
-
-        if (canFlipFromLedge || isWallDetected)
+        private void HandleTurnAround()
         {
+            bool canFlipFromLedge = !isGroundInFrontDetected && hasBody;
+
+            if (!canFlipFromLedge && !isWallDetected) return;
             Flip();
             idleTimer = idleDuration;
             rb.linearVelocity = Vector2.zero;
         }
-    }
 
-    private void HandleMovement()
-    {
-        if (idleTimer > 0)
-            return;
+        private void HandleMovement()
+        {
+            if (idleTimer > 0) return;
 
-        if (canMove == false)
-            return;
+            if (!canMove) return;
 
-        rb.linearVelocity = new Vector2(moveSpeed * facingDir, rb.linearVelocity.y);
-    }
+            rb.linearVelocity = new Vector2(moveSpeed * facingDir, rb.linearVelocity.y);
+        }
 
-    private void CreateBody()
-    {
-        Enemy_SnailBody newBody = Instantiate(bodyPrefab, transform.position, Quaternion.identity);
+        private void CreateBody()
+        {
+            EnemySnailBody newBody = Instantiate(bodyPrefab, transform.position, Quaternion.identity);
 
 
-        if (Random.Range(0, 100) < 50)
-            deathRotationDirection = deathRotationDirection * -1;
+            if (Random.Range(0, 100) < 50) deathRotationDirection = deathRotationDirection * -1;
 
-        newBody.SetupBody(deathImpactSpeed, deathRotationSpeed * deathRotationDirection,facingDir);
+            newBody.SetupBody(deathImpactSpeed, deathRotationSpeed * deathRotationDirection,facingDir);
 
-        Destroy(newBody.gameObject, 10);
-    }
-
-    protected override void Flip()
-    {
-        base.Flip();
-
-        if (hasBody == false)
-            anim.SetTrigger("wallHit");
+            Destroy(newBody.gameObject, 10);
+        }
     }
 }

@@ -4,12 +4,10 @@ public class DamageTrigger : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Player player = collision.gameObject.GetComponent<Player>();
+        Player.Player player = collision.gameObject.GetComponent<Player.Player>();
 
-        if (player != null)
-        {
-            player.Damage();
-            player.Knockback(transform.position.x);
-        }
+        if (!player) return;
+        player.Damage();
+        player.Knockback(transform.position.x);
     }
 }

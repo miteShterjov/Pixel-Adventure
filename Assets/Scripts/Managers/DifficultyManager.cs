@@ -1,27 +1,24 @@
 using UnityEngine;
 
-public enum DifficultyType { Easy = 1, Normal, Hard}
-
-public class DifficultyManager : MonoBehaviour
+namespace Managers
 {
-    public static DifficultyManager instance;
-
-    public DifficultyType difficulty;
-
-    private void Awake()
+    public class DifficultyManager : MonoBehaviour
     {
-        DontDestroyOnLoad(this.gameObject);
+        public static DifficultyManager Instance;
+        public DifficultyType difficulty;
 
-        if (instance == null)
-            instance = this;
-        else
-            Destroy(gameObject);
+        private void Awake()
+        {
+            DontDestroyOnLoad(this.gameObject);
+
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
+        }
+
+        public void SetDifficulty(DifficultyType newDifficulty) => difficulty = newDifficulty;
+        
+        public void LoadDifficulty(int difficultyIndex) => difficulty = (DifficultyType) difficultyIndex;
     }
 
-
-    public void SetDifficulty(DifficultyType newDifficulty) => difficulty = newDifficulty;
-    public void LoadDifficulty(int difficultyIndex)
-    {
-        difficulty = (DifficultyType)difficultyIndex;
-    }
+    public enum DifficultyType { Easy = 1, Normal, Hard}
 }

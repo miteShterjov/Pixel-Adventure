@@ -1,16 +1,16 @@
 using UnityEngine;
-using UnityEngine.Windows;
 
-public class MenuCharcater : MonoBehaviour
+public class MenuCharacter : MonoBehaviour
 {
+    [Header("Movement")]
     [SerializeField] private float speed;
 
     private Vector3 destination;
     private Animator anim;
-
     private bool isMoving;
     private int facingDir = 1;
     private bool facingRight = true;
+    private static readonly int MovingParam = Animator.StringToHash("isMoving");
 
     private void Awake()
     {
@@ -19,15 +19,12 @@ public class MenuCharcater : MonoBehaviour
 
     private void Update()
     {
-        anim.SetBool("isMoving", isMoving);
+        anim.SetBool(MovingParam, isMoving);
 
-        if (isMoving)
-        {
-            transform.position = Vector2.MoveTowards(transform.position, destination, Time.deltaTime * speed);
+        if (!isMoving) return;
+        transform.position = Vector2.MoveTowards(transform.position, destination, Time.deltaTime * speed);
 
-            if (Vector2.Distance(transform.position, destination) < .1f)
-                isMoving = false;
-        }
+        if (Vector2.Distance(transform.position, destination) < .1f) isMoving = false;
     }
 
     public void MoveTo(Transform newDestination)

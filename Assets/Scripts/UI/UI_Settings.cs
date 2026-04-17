@@ -3,44 +3,48 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 
-public class UI_Settings : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private AudioMixer audioMixer;
-    [SerializeField] private float mixerMultiplier = 25;
-
-    [Header("SFX Settings")]
-    [SerializeField] private Slider sfxSlider;
-    [SerializeField] private TextMeshProUGUI sfxSliderText;
-    [SerializeField] private string sfxParametr;
-
-    [Header("BGM Settings")]
-    [SerializeField] private Slider bgmSlider;
-    [SerializeField] private TextMeshProUGUI bgmSliderText;
-    [SerializeField] private string bgmParametr;
-
-    public void SFXSliderValue(float value)
+    public class UISettings : MonoBehaviour
     {
-        sfxSliderText.text = Mathf.RoundToInt(value * 100) + "%";
-        float newValue = Mathf.Log10(value) * mixerMultiplier;
-        audioMixer.SetFloat(sfxParametr, newValue);
-    }
+        [Header("Audio Settings")]
+        [SerializeField] private AudioMixer audioMixer;
+        [SerializeField] private float mixerMultiplier = 25;
 
-    public void BGMSliderValue(float value)
-    {
-        bgmSliderText.text = Mathf.RoundToInt(value * 100) + "%";
-        float newValue = Mathf.Log10(value) * mixerMultiplier;
-        audioMixer.SetFloat(bgmParametr, newValue);
-    }
+        [Header("SFX Settings")]
+        [SerializeField] private Slider sfxSlider;
+        [SerializeField] private TextMeshProUGUI sfxSliderText;
+        [SerializeField] private string sfxParameter;
 
-    private void OnDisable()
-    {
-        PlayerPrefs.SetFloat(sfxParametr, sfxSlider.value);
-        PlayerPrefs.SetFloat(bgmParametr,bgmSlider.value);
-    }
+        [Header("BGM Settings")]
+        [SerializeField] private Slider bgmSlider;
+        [SerializeField] private TextMeshProUGUI bgmSliderText;
+        [SerializeField] private string bgmParameter;
 
-    private void OnEnable()
-    {
-        sfxSlider.value = PlayerPrefs.GetFloat(sfxParametr, .7f);
-        bgmSlider.value = PlayerPrefs.GetFloat(bgmParametr, .7f);
+        public void SfxSliderValue(float value)
+        {
+            sfxSliderText.text = Mathf.RoundToInt(value * 100) + "%";
+            float newValue = Mathf.Log10(value) * mixerMultiplier;
+            audioMixer.SetFloat(sfxParameter, newValue);
+        }
+
+        public void BGMSliderValue(float value)
+        {
+            bgmSliderText.text = Mathf.RoundToInt(value * 100) + "%";
+            float newValue = Mathf.Log10(value) * mixerMultiplier;
+            audioMixer.SetFloat(bgmParameter, newValue);
+        }
+
+        private void OnDisable()
+        {
+            PlayerPrefs.SetFloat(sfxParameter, sfxSlider.value);
+            PlayerPrefs.SetFloat(bgmParameter,bgmSlider.value);
+        }
+
+        private void OnEnable()
+        {
+            sfxSlider.value = PlayerPrefs.GetFloat(sfxParameter, .7f);
+            bgmSlider.value = PlayerPrefs.GetFloat(bgmParameter, .7f);
+        }
     }
 }

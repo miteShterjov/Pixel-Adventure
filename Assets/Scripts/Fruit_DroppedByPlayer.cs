@@ -1,10 +1,11 @@
 using System.Collections;
 using UnityEngine;
 
-public class Fruit_DroppedByPlayer : Fruit
+public class FruitDroppedByPlayer : Fruit
 {
+    [Header("Fruit details")]
     [SerializeField] private Vector2 velocity;
-    [SerializeField] private Color transperentColor;
+    [SerializeField] private Color transparentColor;
     [SerializeField] private float[] waitTime;
     private bool canPickUp;
 
@@ -12,8 +13,7 @@ public class Fruit_DroppedByPlayer : Fruit
     {
         base.Start();
 
-
-        StartCoroutine(BlinkCorotuine());
+        StartCoroutine(BlinkCo());
     }
 
     private void Update()
@@ -21,13 +21,13 @@ public class Fruit_DroppedByPlayer : Fruit
         transform.position += new Vector3(velocity.x, velocity.y) * Time.deltaTime;  
     }
 
-    private IEnumerator BlinkCorotuine()
+    private IEnumerator BlinkCo()
     {
         anim.speed = 0;
 
         foreach (float seconds in waitTime)
         {
-            ToggleSpeedAndColor(transperentColor);
+            ToggleSpeedAndColor(transparentColor);
 
             yield return new WaitForSeconds(seconds);
 
@@ -41,17 +41,17 @@ public class Fruit_DroppedByPlayer : Fruit
         canPickUp = true;
     }
 
-    private void ToggleSpeedAndColor(Color color)
-    {
-        velocity.x = velocity.x * -1;
-        sr.color = color;
-    }
-
     protected override void OnTriggerEnter2D(Collider2D collision)
     {
         if (canPickUp == false) 
             return;
 
         base.OnTriggerEnter2D(collision);
+    }
+    
+    private void ToggleSpeedAndColor(Color color)
+    {
+        velocity.x = velocity.x * -1;
+        sr.color = color;
     }
 }

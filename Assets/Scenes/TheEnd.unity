@@ -246,7 +246,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1275.6946, y: 100}
+  m_SizeDelta: {x: 1021.2188, y: 219.7902}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &262039021
 MonoBehaviour:
@@ -334,7 +334,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 44.7052, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -383,7 +383,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1275.6946, y: 100}
+  m_SizeDelta: {x: 1021.2188, y: 219.7902}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &381165110
 MonoBehaviour:
@@ -521,7 +521,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 600, y: 100}
+  m_SizeDelta: {x: 480.3119, y: 219.7902}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &392799687
 MonoBehaviour:
@@ -658,7 +658,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1275.6946, y: 100}
+  m_SizeDelta: {x: 1021.2188, y: 219.7902}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &544488620
 MonoBehaviour:
@@ -796,7 +796,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1275.6946, y: 100}
+  m_SizeDelta: {x: 1021.2188, y: 219.7902}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &865109848
 MonoBehaviour:
@@ -984,7 +984,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7965520960549696612, guid: 04a85c5342a90724e9f5bdf2c24356f1, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8825649115323208116, guid: 04a85c5342a90724e9f5bdf2c24356f1, type: 3}
       propertyPath: m_Pivot.x
@@ -1396,7 +1396,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1275.6946, y: 100}
+  m_SizeDelta: {x: 1021.2188, y: 219.7902}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1727696741
 MonoBehaviour:

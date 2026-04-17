@@ -1,16 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class StartPoint : MonoBehaviour
+namespace Checkpoint
 {
-    private Animator anim => GetComponent<Animator>();
-
-    private void OnTriggerExit2D(Collider2D collision)
+    [RequireComponent(typeof(Animator))]
+    public class StartPoint : MonoBehaviour
     {
-        Player player = collision.GetComponent<Player>();
+        private Animator anim;
+        private static readonly int ActivateTrigger = Animator.StringToHash("activate");
+    
+        private void Awake()
+        {
+            anim = GetComponent<Animator>();
+        }
 
-        if (player != null)
-            anim.SetTrigger("activate");
+        private void OnTriggerExit2D(Collider2D collision)
+        {
+            if (collision.GetComponent<Player.Player>()) anim.SetTrigger(ActivateTrigger);
+        }
     }
 }

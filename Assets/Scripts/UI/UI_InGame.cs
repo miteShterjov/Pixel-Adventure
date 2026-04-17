@@ -3,62 +3,57 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class UI_InGame : MonoBehaviour
+namespace UI
 {
-    public static UI_InGame instance;
-    public UI_FadeEffect fadeEffect { get; private set; } // read-only
-
-    [SerializeField] private TextMeshProUGUI timerText;
-    [SerializeField] private TextMeshProUGUI fruitText;
-
-    [SerializeField] private GameObject pauseUI;
-    private bool isPaused;
-
-    private void Awake()
+    public class UIInGame : MonoBehaviour
     {
-        instance = this;
+        public static UIInGame Instance;
+        public UIFadeEffect FadeEffect { get; private set; }
 
-        fadeEffect = GetComponentInChildren<UI_FadeEffect>();
-    }
+        [Header("UI elements")]
+        [SerializeField] private TextMeshProUGUI timerText;
+        [SerializeField] private TextMeshProUGUI fruitText;
+        [SerializeField] private GameObject pauseUI;
 
-    private void Start()
-    {
-        fadeEffect.ScreenFade(0, 1);
-    }
+        private bool isPaused;
 
-    private void Update()
-    {
-        if (Keyboard.current.escapeKey.wasPressedThisFrame) PauseButton();
-    }
-
-    public void PauseButton()
-    {
-        if (isPaused)
+        private void Awake()
         {
-            isPaused = false;
-            Time.timeScale = 1;
-            pauseUI.SetActive(false);
+            Instance = this;
+
+            FadeEffect = GetComponentInChildren<UIFadeEffect>();
         }
-        else
+
+        private void Start()
         {
-            isPaused = true;
-            Time.timeScale = 0;
-            pauseUI.SetActive(true);
+            FadeEffect.ScreenFade(0, 1);
         }
-    }
 
-    public void GoToMainMenuButton()
-    {
-        SceneManager.LoadScene(0);
-    }
+        private void Update()
+        {
+            if (Keyboard.current.escapeKey.wasPressedThisFrame) PauseButton();
+        }
 
-    public void UpdateFruitUI(int collectedFruits, int totalFruits)
-    {
-        fruitText.text = collectedFruits + "/" + totalFruits;
-    }
-
-    public void UpdateTimerUI(float timer)
-    {
-        timerText.text = timer.ToString("00") + " s";
+        public void GoToMainMenuButton() => SceneManager.LoadScene("MainMenu");
+        
+        public void UpdateFruitUI(int collectedFruits, int totalFruits) => fruitText.text = collectedFruits + " / " + totalFruits;
+        
+        public void UpdateTimerUI(float timer) => timerText.text = timer.ToString("00");
+        
+        private void PauseButton()
+        {
+            if (isPaused)
+            {
+                isPaused = false;
+                Time.timeScale = 1;
+                pauseUI.SetActive(false);
+            }
+            else
+            {
+                isPaused = true;
+                Time.timeScale = 0;
+                pauseUI.SetActive(true);
+            }
+        }
     }
 }

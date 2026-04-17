@@ -1,113 +1,98 @@
-using System;
+using Player;
 using UnityEngine;
 
-public class Enemy_Bat : Enemy
+namespace Enemies
 {
-    [Header("Bat details"), Space]
-    [SerializeField] private float agrroRadius = 7;
-    [SerializeField] private float chaseDuration = 1;
-    [SerializeField] private float attackSpeed;
-    [SerializeField] private float dieFallSpeed = -5;
-
-    private float defaultSpeed;
-    private float chaseTimer;
-
-    private Vector3 originalPosition;
-    private Vector3 destination;
-
-    private bool canDetectPlayer;
-    private Collider2D target;
-
-    protected override void Awake()
+    public class EnemyBat : Enemy
     {
-        base.Awake();
+        [Header("Bat details")]
+        [SerializeField] private float aggroRadius = 7;
+        [SerializeField] private float chaseDuration = 1;
+        [SerializeField] private float attackSpeed;
 
-        defaultSpeed = moveSpeed;
-        originalPosition = transform.position;
-        canMove = false;
-    }
+        private float defaultSpeed;
+        private float chaseTimer;
+        private Vector3 originalPosition;
+        private Vector3 destination;
+        private bool canDetectPlayer;
+        private Collider2D target;
+        
+        private static readonly int MovingParam = Animator.StringToHash("isMoving");
 
-    protected override void Update()
-    {
-        if (target != null && target.GetComponent<PlayerHealthController>().IsKnocked) return;
-        base.Update();
-
-        chaseTimer -= Time.deltaTime;
-
-        if (idleTimer < 0 )
-            canDetectPlayer = true;
-
-        HandleMovement();
-        HandlePlayerDetection();
-    }
-
-    private void HandleMovement()
-    {
-        if (canMove == false)
-            return;
-
-        HandleFlip(destination.x);
-        transform.position = Vector2.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
-
-        if (chaseTimer > 0 & target != null)
-            destination = target.transform.position;
-        else
-            moveSpeed = attackSpeed;
-
-        if (Vector2.Distance(transform.position, destination) < .1f)
+        protected override void Awake()
         {
+            base.Awake();
+
+            defaultSpeed = moveSpeed;
+            originalPosition = transform.position;
+            canMove = false;
+        }
+
+        protected override void Update()
+        {
+            if (target && target.GetComponent<PlayerHealthController>().IsKnocked) return;
+            
+            base.Update();
+
+            chaseTimer -= Time.deltaTime;
+
+            if (idleTimer < 0 ) canDetectPlayer = true;
+
+            HandleMovement();
+            HandlePlayerDetection();
+        }
+        
+        public override void Die()
+        {
+            rb.linearVelocity = Vector2.zero;
+            base.Die();
+            canMove = false;
+        }
+
+        protected override void HandleAnimator() {}
+
+        protected override void OnDrawGizmos()
+        {
+            base.OnDrawGizmos();
+            Gizmos.DrawWireSphere(transform.position, aggroRadius);
+        }
+        // ReSharper disable Unity.PerformanceAnalysis
+        private void HandleMovement()
+        {
+            if (!canMove) return;
+
+            HandleFlip(destination.x);
+            transform.position = Vector2.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
+
+            if (chaseTimer > 0 & target) destination = target.transform.position;
+            else moveSpeed = attackSpeed;
+
+            if (!(Vector2.Distance(transform.position, destination) < .1f)) return;
             if (destination == originalPosition)
             {
                 idleTimer = idleDuration;
                 canDetectPlayer = false;
                 canMove = false;
-                anim.SetBool("isMoving", false);
+                anim.SetBool(MovingParam, false);
                 target = null;
                 moveSpeed = defaultSpeed;
             }
-            else
-            {
-                destination = originalPosition;
-            }
+            else destination = originalPosition;
         }
-    }
 
-    private void HandlePlayerDetection()
-    {
-        if (target == null && canDetectPlayer)
+        private void HandlePlayerDetection()
         {
-            target = Physics2D.OverlapCircle(transform.position, agrroRadius, whatIsPlayer);
+            if (target || !canDetectPlayer) return;
+            target = Physics2D.OverlapCircle(transform.position, aggroRadius, whatIsPlayer);
 
-            if (target != null)
-            {
-                chaseTimer = chaseDuration;
-                destination = target.transform.position;
-                canDetectPlayer = false;
-                anim.SetBool("isMoving", true);
-            }
+            if (!target) return;
+            chaseTimer = chaseDuration;
+            destination = target.transform.position;
+            canDetectPlayer = false;
+            anim.SetBool(MovingParam, true);
         }
-    }
 
-    private void AllowMovement() => canMove = true;
+        private void AllowMovement() => canMove = true;
 
-    protected override void HandleAnimator()
-    {
-        
-    }
-
-    public override void Die()
-    {
-        rb.linearVelocity = Vector2.zero;
-        
-        // Call base but then override the upward velocity with downward
-        base.Die();
-        canMove = false;
-    }
-
-    protected override void OnDrawGizmos()
-    {
-        base.OnDrawGizmos();
-
-        Gizmos.DrawWireSphere(transform.position, agrroRadius);
     }
 }

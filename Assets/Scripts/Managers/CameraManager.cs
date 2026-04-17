@@ -1,25 +1,28 @@
 using Unity.Cinemachine;
 using UnityEngine;
 
-public class CameraManager : MonoBehaviour
+namespace Managers
 {
-    public static CameraManager instance;
-
-    [Header("Screen Shake")]
-    [SerializeField] private Vector2 shakeVelocity;
-
-    private CinemachineImpulseSource impulseSource;
-
-    private void Awake()
+    public class CameraManager : MonoBehaviour
     {
-        instance = this;
+        public static CameraManager Instance;
 
-        impulseSource = GetComponent<CinemachineImpulseSource>();
-    }
+        [Header("Screen Shake")]
+        [SerializeField] private Vector2 shakeVelocity;
 
-    public void ScreenShake(float shakeDirection)
-    {
-        impulseSource.DefaultVelocity = new Vector2(shakeVelocity.x * shakeDirection, shakeVelocity.y);
-        impulseSource.GenerateImpulse();
+        private CinemachineImpulseSource impulseSource;
+
+        private void Awake()
+        {
+            Instance = this;
+
+            impulseSource = GetComponent<CinemachineImpulseSource>();
+        }
+
+        public void ScreenShake(float shakeDirection)
+        {
+            impulseSource.DefaultVelocity = new Vector2(shakeVelocity.x * shakeDirection, shakeVelocity.y);
+            impulseSource.GenerateImpulse();
+        }
     }
 }

@@ -1,103 +1,97 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 
-public class Enemy_Rino : Enemy
+namespace Enemies
 {
-    [Header("Rino details")]
-    [SerializeField] private float maxSpeed;
-    [SerializeField] private float speedUpRate = .6f;
-    private float defaultSpeed;
-    [SerializeField] private Vector2 impactPower;
-
-    [Header("Effects")]
-    [SerializeField] private ParticleSystem dustFx;
-    [SerializeField] private Vector2 cameraImpulseDir;
-    private CinemachineImpulseSource impulseSource;
-
-    protected override void Start()
+    public class EnemyRino : Enemy
     {
-        base.Start();
+        [Header("Rino details")]
+        [SerializeField] private float maxSpeed;
+        [SerializeField] private float speedUpRate = .6f;
+        [SerializeField] private Vector2 impactPower;
 
-        canMove = false;
-        defaultSpeed = moveSpeed;
-        impulseSource = GetComponent<CinemachineImpulseSource>();
-    }
+        [Header("Effects")]
+        [SerializeField] private ParticleSystem dustFx;
+        [SerializeField] private Vector2 cameraImpulseDir;
+        
+        private float defaultSpeed;
+        private CinemachineImpulseSource impulseSource;
+        private static readonly int HitWallParam = Animator.StringToHash("hitWall");
 
-    protected override void Update()
-    {
-        base.Update();
-        HandleCharge();
-    }
+        protected override void Start()
+        {
+            base.Start();
 
-    private void HitWallImpact()
-    {
-        dustFx.Play();
-        impulseSource.DefaultVelocity = new Vector2(cameraImpulseDir.x * facingDir, cameraImpulseDir.y);
-        impulseSource.GenerateImpulse();
-    }
+            canMove = false;
+            defaultSpeed = moveSpeed;
+            impulseSource = GetComponent<CinemachineImpulseSource>();
+        }
 
-    private void HandleCharge()
-    {
-        if (canMove == false)
-            return;
+        protected override void Update()
+        {
+            base.Update();
+            HandleCharge();
+        }
+        
+        protected override void HandleCollision()
+        {
+            base.HandleCollision();
 
-        HandleSpeedUp();
+            if (isPlayerDetected && isGrounded) canMove = true;
+        }
 
-        rb.linearVelocity = new Vector2(moveSpeed * facingDir, rb.linearVelocity.y);
+        private void HitWallImpact()
+        {
+            dustFx.Play();
+            impulseSource.DefaultVelocity = new Vector2(cameraImpulseDir.x * facingDir, cameraImpulseDir.y);
+            impulseSource.GenerateImpulse();
+        }
 
-        if (isWallDetected)
-            WallHit();
+        private void HandleCharge()
+        {
+            if (!canMove) return;
 
-        if (!isGroundInfrontDetected)
-            TurnAround();
-    }
+            HandleSpeedUp();
 
-    private void HandleSpeedUp()
-    {
-        moveSpeed = moveSpeed + (Time.deltaTime * speedUpRate);
+            rb.linearVelocity = new Vector2(moveSpeed * facingDir, rb.linearVelocity.y);
 
-        if (moveSpeed >= maxSpeed)
-            maxSpeed = moveSpeed;
-    }
+            if (isWallDetected) WallHit();
 
-    private void TurnAround()
-    {
-        SpeedReset();
-        canMove = false;
-        rb.linearVelocity = Vector2.zero;
-        Flip();
-    }
+            if (!isGroundInFrontDetected) TurnAround();
+        }
 
-    private void WallHit()
-    {
-        canMove = false;
+        private void HandleSpeedUp()
+        {
+            moveSpeed = moveSpeed + (Time.deltaTime * speedUpRate);
 
-        HitWallImpact();
-        SpeedReset();
+            if (moveSpeed >= maxSpeed) maxSpeed = moveSpeed;
+        }
 
-        anim.SetBool("hitWall", true);
-        rb.linearVelocity = new Vector2(impactPower.x * -facingDir, impactPower.y);
-    }
+        private void TurnAround()
+        {
+            SpeedReset();
+            canMove = false;
+            rb.linearVelocity = Vector2.zero;
+            Flip();
+        }
 
-    private void SpeedReset()
-    {
-        moveSpeed = defaultSpeed;
-    }
+        private void WallHit()
+        {
+            canMove = false;
 
-    private void ChargeIsOver()
-    {
-        anim.SetBool("hitWall", false);
-        Invoke(nameof(Flip), 1);
-    }
+            HitWallImpact();
+            SpeedReset();
 
-    protected override void HandleCollision()
-    {
-        base.HandleCollision();
+            anim.SetBool(HitWallParam, true);
+            rb.linearVelocity = new Vector2(impactPower.x * -facingDir, impactPower.y);
+        }
 
-        if (isPlayerDetected && isGrounded)
-            canMove = true;
+        private void SpeedReset() => moveSpeed = defaultSpeed;
+        
+        private void ChargeIsOver()
+        {
+            anim.SetBool(HitWallParam, false);
+            Invoke(nameof(Flip), 1);
+        }
     }
 }

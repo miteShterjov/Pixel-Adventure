@@ -329,6 +329,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Ghost
   moveSpeed: 3
   idleDuration: 1.5
+  isFacingRight: 0
   deathImpactSpeed: 5
   deathRotationSpeed: 150
   groundCheckDistance: 1.2
@@ -341,7 +342,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   groundCheck: {fileID: 1605793539460922839}
-  agrroRadius: 30
+  aggroRadius: 15
   activeDuration: 4
   activeTimer: 1
   xMinDistance: 3

@@ -1,15 +1,19 @@
+using Managers;
 using UnityEngine;
 
-public class UI_Difficulty : MonoBehaviour
+namespace UI
 {
-    private DifficultyManager difficultyManager;
-
-    private void Start()
+    public class UIDifficulty : MonoBehaviour
     {
-        difficultyManager = DifficultyManager.instance;
-    }
+        private DifficultyManager difficultyManager;
 
-    public void SetEasyMode() => difficultyManager.SetDifficulty(DifficultyType.Easy);
-    public void SetNormalMode() => difficultyManager.SetDifficulty(DifficultyType.Normal);
-    public void SetHardMode() => difficultyManager.SetDifficulty(DifficultyType.Hard);
+        private void Start()
+        {
+            difficultyManager = DifficultyManager.Instance;
+        }
+
+        public void SetEasyMode() => difficultyManager.SetDifficulty(DifficultyType.Easy);
+        public void SetNormalMode() => difficultyManager.SetDifficulty(DifficultyType.Normal);
+        public void SetHardMode() => difficultyManager.SetDifficulty(DifficultyType.Hard);
+    }
 }

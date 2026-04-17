@@ -1,25 +1,25 @@
 using UnityEngine;
 
-public class Trap_FireButton : MonoBehaviour
+namespace Traps
 {
-    private Animator anim;
-    private Trap_Fire trapFire;
-
-    private void Awake()
+    public class TrapFireButton : MonoBehaviour
     {
-        anim = GetComponent<Animator>();
-        trapFire = GetComponentInParent<Trap_Fire>();
-    }
+        private Animator anim;
+        private TrapFire trapFire;
+    
+        private static readonly int ActivateTrigger = Animator.StringToHash("activate");
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        Player player = collision.gameObject.GetComponent<Player>();
-
-        if (player != null)
+        private void Awake()
         {
-            anim.SetTrigger("activate");
-            trapFire.SwitchOffFire();
+            anim = GetComponent<Animator>();
+            trapFire = GetComponentInParent<TrapFire>();
         }
 
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (!collision.gameObject.GetComponent<Player.Player>()) return;
+            anim.SetTrigger(ActivateTrigger);
+            trapFire.SwitchOffFire();
+        }
     }
 }

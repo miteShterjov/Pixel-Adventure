@@ -1,103 +1,93 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy_Chicken : Enemy
+namespace Enemies
 {
-    [Header("Chicken details")]
-    [SerializeField] private float aggroDuration;
-    [SerializeField] private float detectionRange;
-    [SerializeField] private float attackCooldown = 1.5f;
-    [SerializeField] private float speedIncreaseRate = 0.5f;
-
-    private float aggroTimer;
-    private float lastTimeAttacked;
-    private float currentMoveSpeed;
-    private bool isChasing;
-    private bool canFlip = true;
-
-    protected override void Update()
+    public class EnemyChicken : Enemy
     {
-        base.Update();
+        [Header("Chicken details")]
+        [SerializeField] private float aggroDuration;
+        [SerializeField] private float detectionRange;
+        [SerializeField] private float attackCooldown = 1.5f;
+        [SerializeField] private float speedIncreaseRate = 0.5f;
 
-        aggroTimer -= Time.deltaTime;
+        private float aggroTimer;
+        private float lastTimeAttacked;
+        private float currentMoveSpeed;
+        private bool isChasing;
+        private bool canFlip = true;
 
-        if (isDead)
-            return;
-
-        bool canAttack = Time.time > lastTimeAttacked + attackCooldown;
-
-        if (isPlayerDetected)
+        protected override void Update()
         {
-            canMove = true;
-            aggroTimer = aggroDuration;
+            base.Update();
 
-            if (!isChasing && canAttack)
-                Attack();
+            aggroTimer -= Time.deltaTime;
 
-            if (isChasing)
+            if (isDead) return;
+
+            bool canAttack = Time.time > lastTimeAttacked + attackCooldown;
+
+            if (isPlayerDetected)
             {
-                // Gradually increase speed while chasing and player is in range
-                currentMoveSpeed += speedIncreaseRate * Time.deltaTime;
+                canMove = true;
+                aggroTimer = aggroDuration;
+
+                if (!isChasing && canAttack) Attack();
+
+                if (isChasing) currentMoveSpeed += speedIncreaseRate * Time.deltaTime;
             }
+
+            if (aggroTimer < 0)
+            {
+                canMove = false;
+                isChasing = false;
+                currentMoveSpeed = moveSpeed;
+            }
+
+            HandleMovement();
+
+            if (isGrounded) HandleTurnAround();
+        }
+        
+        protected override void HandleFlip(float xValue)
+        {
+            if ((!(xValue < transform.position.x) || !facingRight) &&
+                (!(xValue > transform.position.x) || facingRight)) return;
+            if (!canFlip) return;
+            canFlip = false;
+            
+            Invoke(nameof(Flip), .3f);
         }
 
-        if (aggroTimer < 0)
+        protected override void Flip()
         {
+            base.Flip();
+            canFlip = true;
+        }
+
+        private void HandleTurnAround()
+        {
+            if (isGroundInFrontDetected && !isWallDetected) return;
+            Flip();
             canMove = false;
-            isChasing = false;
+            SetLinearVelocity(Vector2.zero);
+        }
+
+        private void Attack()
+        {
+            lastTimeAttacked = Time.time;
+            isChasing = true;
             currentMoveSpeed = moveSpeed;
         }
 
-        HandleMovement();
-
-        if (isGrounded)
-            HandleTurnAround();
-    }
-
-    private void HandleTurnAround()
-    {
-        if (!isGroundInfrontDetected || isWallDetected)
+        private void HandleMovement()
         {
-            Flip();
-            canMove = false;
-            rb.linearVelocity = Vector2.zero;
+            if (!canMove) return;
+            if (!player) return;
+
+            if (player) HandleFlip(player.transform.position.x);
+
+            float speedToUse = isChasing ? currentMoveSpeed : moveSpeed;
+            SetLinearVelocity(new Vector2(speedToUse * facingDir, rb.linearVelocity.y));
         }
-    }
-
-    private void Attack()
-    {
-        lastTimeAttacked = Time.time;
-        isChasing = true;
-        currentMoveSpeed = moveSpeed;
-    }
-
-    private void HandleMovement()
-    {
-        if (canMove == false) return;
-        if (player == null) return;
-
-        if (player != null) HandleFlip(player.transform.position.x);
-
-        float speedToUse = isChasing ? currentMoveSpeed : moveSpeed;
-        rb.linearVelocity = new Vector2(speedToUse * facingDir, rb.linearVelocity.y);
-    }
-
-    protected override void HandleFlip(float xValue)
-    {
-        if (xValue < transform.position.x && facingRight || xValue > transform.position.x && !facingRight)
-        {
-            if (canFlip)
-            {
-                canFlip = false;
-                Invoke(nameof(Flip), .3f);
-            }
-        }
-    }
-
-    protected override void Flip()
-    {
-        base.Flip();
-        canFlip = true;
     }
 }

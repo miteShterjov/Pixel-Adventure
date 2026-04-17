@@ -1,166 +1,163 @@
 using System.Collections;
+using Managers;
 using UnityEngine;
 
-public class PlayerJumpController : MonoBehaviour
+namespace Player
 {
-    [Header("Jump")]
-    [SerializeField] private float jumpForce;
-    [SerializeField] private float doubleJumpForce;
-
-    [Header("Buffer & Coyote jump")]
-    [SerializeField] private float bufferJumpWindow = .25f;
-    private float bufferJumpActivated = -1;
-    [SerializeField] private float coyoteJumpWindow = .5f;
-    private float coyoteJumpActivated = -1;
-
-    [Header("Wall interactions")]
-    [SerializeField] private float wallJumpDuration = .6f;
-    [SerializeField] private Vector2 wallJumpForce;
-
-    private Rigidbody2D rb;
-    private PlayerCollisionDetector collisionDetector;
-    private PlayerMovementController movementController;
-    private PlayerAnimationController animationController;
-
-    private float defaultGravityScale;
-    private bool canDoubleJump;
-    private bool isWallJumping;
-    private bool isAirborne;
-
-    public bool CanDoubleJump => canDoubleJump;
-    public bool IsWallJumping => isWallJumping;
-    public bool IsAirborne => isAirborne;
-
-    public void EnableDoubleJump() => canDoubleJump = true;
-
-    private void Awake()
+    public class PlayerJumpController : MonoBehaviour
     {
-        rb = GetComponent<Rigidbody2D>();
-        if (rb == null) Debug.LogError("Rigidbody2D component not found on Player.");
-        collisionDetector = GetComponent<PlayerCollisionDetector>();
-        movementController = GetComponent<PlayerMovementController>();
-        animationController = GetComponent<PlayerAnimationController>();
-    }
+        public bool IsWallJumping { get; private set; }
+        public bool IsAirborne { get; private set; }
+        public void EnableDoubleJump() => CanDoubleJump = true;
+        
+        [Header("Jump")]
+        [SerializeField] private float jumpForce;
+        [SerializeField] private float doubleJumpForce;
 
-    private void Start()
-    {
-        defaultGravityScale = rb.gravityScale;
-    }
+        [Header("Buffer & Coyote jump")]
+        [SerializeField] private float bufferJumpWindow = .25f;
+        private float bufferJumpActivated = -1;
+        [SerializeField] private float coyoteJumpWindow = .5f;
+        private float coyoteJumpActivated = -1;
 
-    public void UpdateAirbornStatus()
-    {
-        if (collisionDetector.IsGrounded && isAirborne)
-            HandleLanding();
+        [Header("Wall interactions")]
+        [SerializeField] private float wallJumpDuration = .6f;
+        [SerializeField] private Vector2 wallJumpForce;
 
-        if (!collisionDetector.IsGrounded && !isAirborne)
-            BecomeAirborne();
-    }
+        private Rigidbody2D rb;
+        private PlayerCollisionDetector collisionDetector;
+        private PlayerMovementController movementController;
 
-    private void BecomeAirborne()
-    {
-        isAirborne = true;
+        private float defaultGravityScale;
 
-        if (rb.linearVelocity.y < 0)
-            ActivateCoyoteJump();
-    }
+        private bool CanDoubleJump { get; set; }
 
-    private void HandleLanding()
-    {
-        movementController.PlayDustFx();
-        isAirborne = false;
-        canDoubleJump = true;
-        AttemptBufferJump();
-    }
-
-    public void RequestBufferJump()
-    {
-        if (isAirborne)
-            bufferJumpActivated = Time.time;
-    }
-
-    private void AttemptBufferJump()
-    {
-        if (Time.time < bufferJumpActivated + bufferJumpWindow)
+        private void Awake()
         {
-            bufferJumpActivated = Time.time - 1;
-            Jump();
-        }
-    }
-
-    private void ActivateCoyoteJump() => coyoteJumpActivated = Time.time;
-    private void CancelCoyoteJump() => coyoteJumpActivated = Time.time - 1;
-
-    public void JumpButton()
-    {
-        bool coyoteJumpAvailable = Time.time < coyoteJumpActivated + coyoteJumpWindow;
-
-        if (collisionDetector.IsGrounded || coyoteJumpAvailable)
-        {
-            Jump();
-        }
-        else if (collisionDetector.IsWallDetected && !collisionDetector.IsGrounded)
-        {
-            WallJump();
-        }
-        else if (canDoubleJump)
-        {
-            DoubleJump();
+            rb = GetComponent<Rigidbody2D>();
+            if (!rb) Debug.LogError("Rigidbody2D component not found on Player.");
+            collisionDetector = GetComponent<PlayerCollisionDetector>();
+            movementController = GetComponent<PlayerMovementController>();
         }
 
-        CancelCoyoteJump();
-    }
+        private void Start()
+        {
+            defaultGravityScale = rb.gravityScale;
+        }
 
-    private void Jump()
-    {
-        movementController.PlayDustFx();
-        AudioManager.instance.PlaySFX(3);
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-    }
+        public void UpdateAirborneStatus()
+        {
+            if (collisionDetector.IsGrounded && IsAirborne) HandleLanding();
 
-    private void DoubleJump()
-    {
-        movementController.PlayDustFx();
-        AudioManager.instance.PlaySFX(3);
+            if (!collisionDetector.IsGrounded && !IsAirborne) BecomeAirborne();
+        }
 
-        StopCoroutine(WallJumpRoutine());
-        isWallJumping = false;
-        movementController.SetWallJumpingState(false);
-        canDoubleJump = false;
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
-    }
+        private void BecomeAirborne()
+        {
+            IsAirborne = true;
 
-    private void WallJump()
-    {
-        movementController.PlayDustFx();
-        AudioManager.instance.PlaySFX(12);
+            if (rb.linearVelocity.y < 0)
+                ActivateCoyoteJump();
+        }
 
-        canDoubleJump = true;
-        rb.linearVelocity = new Vector2(wallJumpForce.x * -movementController.FacingDir, wallJumpForce.y);
+        private void HandleLanding()
+        {
+            movementController.PlayDustFx();
+            IsAirborne = false;
+            CanDoubleJump = true;
+            AttemptBufferJump();
+        }
 
-        movementController.Flip();
+        public void RequestBufferJump()
+        {
+            if (IsAirborne)
+                bufferJumpActivated = Time.time;
+        }
 
-        StopAllCoroutines();
-        StartCoroutine(WallJumpRoutine());
-    }
+        private void AttemptBufferJump()
+        {
+            if (Time.time < bufferJumpActivated + bufferJumpWindow)
+            {
+                bufferJumpActivated = Time.time - 1;
+                Jump();
+            }
+        }
 
-    private IEnumerator WallJumpRoutine()
-    {
-        isWallJumping = true;
-        movementController.SetWallJumpingState(true);
+        private void ActivateCoyoteJump() => coyoteJumpActivated = Time.time;
+        private void CancelCoyoteJump() => coyoteJumpActivated = Time.time - 1;
 
-        yield return new WaitForSeconds(wallJumpDuration);
+        public void JumpButton()
+        {
+            bool coyoteJumpAvailable = Time.time < coyoteJumpActivated + coyoteJumpWindow;
 
-        isWallJumping = false;
-        movementController.SetWallJumpingState(false);
-    }
+            if (collisionDetector.IsGrounded || coyoteJumpAvailable)
+            {
+                Jump();
+            }
+            else if (collisionDetector.IsWallDetected && !collisionDetector.IsGrounded)
+            {
+                WallJump();
+            }
+            else if (CanDoubleJump)
+            {
+                DoubleJump();
+            }
 
-    public void ResetGravityScale()
-    {
-        rb.gravityScale = defaultGravityScale;
-    }
+            CancelCoyoteJump();
+        }
 
-    public void SetGravityScale(float scale)
-    {
-        rb.gravityScale = scale;
+        private void Jump()
+        {
+            movementController.PlayDustFx();
+            AudioManager.Instance.PlaySfx(3);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        }
+
+        private void DoubleJump()
+        {
+            movementController.PlayDustFx();
+            AudioManager.Instance.PlaySfx(3);
+
+            StopCoroutine(WallJumpRoutine());
+            IsWallJumping = false;
+            movementController.SetWallJumpingState(false);
+            CanDoubleJump = false;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
+        }
+
+        private void WallJump()
+        {
+            movementController.PlayDustFx();
+            AudioManager.Instance.PlaySfx(12);
+
+            CanDoubleJump = true;
+            rb.linearVelocity = new Vector2(wallJumpForce.x * -movementController.FacingDir, wallJumpForce.y);
+
+            movementController.Flip();
+
+            StopAllCoroutines();
+            StartCoroutine(WallJumpRoutine());
+        }
+
+        private IEnumerator WallJumpRoutine()
+        {
+            IsWallJumping = true;
+            movementController.SetWallJumpingState(true);
+
+            yield return new WaitForSeconds(wallJumpDuration);
+
+            IsWallJumping = false;
+            movementController.SetWallJumpingState(false);
+        }
+
+        public void ResetGravityScale()
+        {
+            rb.gravityScale = defaultGravityScale;
+        }
+
+        public void SetGravityScale(float scale)
+        {
+            rb.gravityScale = scale;
+        }
     }
 }

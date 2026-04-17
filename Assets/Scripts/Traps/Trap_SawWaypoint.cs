@@ -1,8 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Trap_SawWaypoint : MonoBehaviour
+namespace Traps
 {
-    //We need it to detect object
+    public class TrapSawWaypoint : MonoBehaviour
+    {
+        //We need it to detect object
+    }
 }

@@ -1,32 +1,26 @@
 using UnityEngine;
 
-public class LevelCameraTrigger : MonoBehaviour
+namespace Camera
 {
-    private LevelCamera levelCamera;
-
-    private void Awake()
+    public class LevelCameraTrigger : MonoBehaviour
     {
-        levelCamera = GetComponentInParent<LevelCamera>();
-    }
+        private LevelCamera levelCamera;
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        Player player = collision.gameObject.GetComponent<Player>();
-
-        if (player != null)
+        private void Awake()
         {
+            levelCamera = GetComponentInParent<LevelCamera>();
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (!collision.gameObject.TryGetComponent<Player.Player>(out var player)) return;
             levelCamera.EnableCamera(true);
             levelCamera.SetNewTarger(player.transform);
         }
-    }
 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        Player player = collision.gameObject.GetComponent<Player>();
-
-        if (player != null)
+        private void OnTriggerExit2D(Collider2D collision)
         {
-            levelCamera.EnableCamera(false);
+            if (collision.gameObject.GetComponent<Player.Player>()) levelCamera.EnableCamera(false);
         }
     }
 }

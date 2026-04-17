@@ -1,55 +1,58 @@
+using Managers;
 using UnityEngine;
 
-public class PlayerAnimationController : MonoBehaviour
+namespace Player
 {
-    [Header("Player Visuals")]
-    [SerializeField] private AnimatorOverrideController[] animators;
-    [SerializeField] private int skinId;
-
-    private static readonly int xVelocity = Animator.StringToHash("xVelocity");
-    private static readonly int yVelocity = Animator.StringToHash("yVelocity");
-    private static readonly int AnimGroundedParam = Animator.StringToHash("isGrounded");
-    private static readonly int AnimWallDetectedParam = Animator.StringToHash("isWallDetected");
-    private static readonly int AnimKnockedParam = Animator.StringToHash("isKnocked");
-
-
-    private Rigidbody2D rb;
-    private Animator anim;
-
-    private void Awake()
+    public class PlayerAnimationController : MonoBehaviour
     {
-        rb = GetComponent<Rigidbody2D>();
-        anim = GetComponentInChildren<Animator>();
-    }
+        [Header("Player Visuals")]
+        [SerializeField] private AnimatorOverrideController[] animators;
+        [SerializeField] private int skinId;
 
-    public void UpdateAnimations()
-    {
-        anim.SetFloat(xVelocity, rb.linearVelocity.x);
-        anim.SetFloat(yVelocity, rb.linearVelocity.y);
-    }
+        private static readonly int XVelocity = Animator.StringToHash("xVelocity");
+        private static readonly int YVelocity = Animator.StringToHash("yVelocity");
+        private static readonly int AnimGroundedParam = Animator.StringToHash("isGrounded");
+        private static readonly int AnimWallDetectedParam = Animator.StringToHash("isWallDetected");
+        private static readonly int AnimKnockedParam = Animator.StringToHash("isKnocked");
 
-    public void UpdateGroundedAnimation(bool isGrounded)
-    {
-        anim.SetBool(AnimGroundedParam, isGrounded);
-    }
 
-    public void UpdateWallDetectedAnimation(bool isWallDetected)
-    {
-        anim.SetBool(AnimWallDetectedParam, isWallDetected);
-    }
+        private Rigidbody2D rb;
+        private Animator anim;
 
-    public void SetKnockedAnimation(bool isKnocked)
-    {
-        anim.SetBool(AnimKnockedParam, isKnocked);
-    }
+        private void Awake()
+        {
+            rb = GetComponent<Rigidbody2D>();
+            anim = GetComponentInChildren<Animator>();
+        }
 
-    public void UpdateSkin()
-    {
-        SkinManager skinManager = SkinManager.instance;
+        public void UpdateAnimations()
+        {
+            anim.SetFloat(XVelocity, rb.linearVelocity.x);
+            anim.SetFloat(YVelocity, rb.linearVelocity.y);
+        }
 
-        if (skinManager == null)
-            return;
+        public void UpdateGroundedAnimation(bool isGrounded)
+        {
+            anim.SetBool(AnimGroundedParam, isGrounded);
+        }
 
-        anim.runtimeAnimatorController = animators[skinManager.choosenSkinId];
+        public void UpdateWallDetectedAnimation(bool isWallDetected)
+        {
+            anim.SetBool(AnimWallDetectedParam, isWallDetected);
+        }
+
+        public void SetKnockedAnimation(bool isKnocked)
+        {
+            anim.SetBool(AnimKnockedParam, isKnocked);
+        }
+
+        public void UpdateSkin()
+        {
+            SkinManager skinManager = SkinManager.Instance;
+
+            if (!skinManager) return;
+
+            anim.runtimeAnimatorController = animators[skinManager.chosenSkinId];
+        }
     }
 }

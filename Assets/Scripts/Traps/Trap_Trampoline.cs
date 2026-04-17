@@ -1,26 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Trap_Trampoline : MonoBehaviour
+namespace Traps
 {
-    protected Animator anim;
-    [SerializeField] private float pushPower;
-    [SerializeField] private float duration = .5f;
-
-    private void Awake()
+    public class TrapTrampoline : MonoBehaviour
     {
-        anim = GetComponent<Animator>();
-    }
+        [SerializeField] private float pushPower;
+        [SerializeField] private float duration = .5f;
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        Player player = collision.gameObject.GetComponent<Player>();
+        private Animator anim;
+        private static readonly int ActivateTrigger = Animator.StringToHash("activate");
 
-        if (player != null)
+        private void Awake()
         {
+            anim = GetComponent<Animator>();
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            Player.Player player = collision.gameObject.GetComponent<Player.Player>();
+
+            if (!player) return;
+            
             player.Push(transform.up * pushPower,duration);
-            anim.SetTrigger("activate");
+            anim.SetTrigger(ActivateTrigger);
         }
     }
 }

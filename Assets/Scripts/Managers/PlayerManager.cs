@@ -1,68 +1,69 @@
 using System;
 using System.Collections;
+using Checkpoint;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour
+namespace Managers
 {
-    public static event Action OnPlayerRespawn;
-    public static PlayerManager instance;
-
-    [Header("Player")]
-    [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private Transform respawnPoint;
-    [SerializeField] private float respawnDelay;
-    public Player player;
-
-    private void Awake()
+    public class PlayerManager : MonoBehaviour
     {
-        if (instance == null)
-            instance = this;
-        else
-            Destroy(gameObject);
-    }
+        public static event Action OnPlayerRespawn;
+        public static PlayerManager Instance;
 
-    private void Start()
-    {
-        if (respawnPoint == null) respawnPoint = FindFirstObjectByType<StartPoint>().transform;
+        [Header("Player")]
+        [SerializeField] private GameObject playerPrefab;
+        [SerializeField] private Transform respawnPoint;
+        [SerializeField] private float respawnDelay;
+        public Player.Player player;
 
-        if (player == null) player = FindFirstObjectByType<Player>();
-        if (player == null) SpawnPlayerAtStart();
-    }
+        private void Awake()
+        {
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
+        }
 
-    private void Update()
-    {
-      if (player != null && player.GetComponent<Rigidbody2D>().gravityScale == 0) 
-      {
-        player.GetComponent<Rigidbody2D>().gravityScale = 3.5f;  
-      }
-    }
+        private void Start()
+        {
+            if (respawnPoint == null) respawnPoint = FindFirstObjectByType<StartPoint>().transform;
 
-    private void SpawnPlayerAtStart()
-    {
-        DifficultyManager difficultyManager = DifficultyManager.instance;
-        StartCoroutine(RespawnCourutine());
-    }
+            if (player == null) player = FindFirstObjectByType<Player.Player>();
+            if (player == null) SpawnPlayerAtStart();
+        }
 
-    public void RespawnPlayer()
-    {
-        DifficultyManager difficultyManager = DifficultyManager.instance;
-
-        if (difficultyManager != null && difficultyManager.difficulty == DifficultyType.Hard)
-            return;
-
-        StartCoroutine(RespawnCourutine());
-    }
-
-    private IEnumerator RespawnCourutine()
-    {
-        yield return new WaitForSeconds(respawnDelay);
-
-        GameObject newPlayer = Instantiate(playerPrefab, respawnPoint.position, Quaternion.identity);
-        player = newPlayer.GetComponent<Player>();
+        private void Update()
+        {
+            if (player && player.GetComponent<Rigidbody2D>().gravityScale == 0) 
+            {
+                player.GetComponent<Rigidbody2D>().gravityScale = 3.5f;  
+            }
+        }
         
-        OnPlayerRespawn?.Invoke();
+        public void RespawnPlayer()
+        {
+            DifficultyManager difficultyManager = DifficultyManager.Instance;
+
+            if (difficultyManager != null && difficultyManager.difficulty == DifficultyType.Hard) return;
+
+            StartCoroutine(RespawnCoroutine());
+        }
+
+        public void UpdateRespawnPosition(Transform newRespawnPoint) => respawnPoint = newRespawnPoint;
+        
+        private IEnumerator RespawnCoroutine()
+        {
+            yield return new WaitForSeconds(respawnDelay);
+
+            GameObject newPlayer = Instantiate(playerPrefab, respawnPoint.position, Quaternion.identity);
+            player = newPlayer.GetComponent<Player.Player>();
+        
+            OnPlayerRespawn?.Invoke();
+        }
+
+        private void SpawnPlayerAtStart()
+        {
+            // its never used but if there is an issue its prob here
+            // DifficultyManager difficultyManager = DifficultyManager.Instance;
+            StartCoroutine(RespawnCoroutine());
+        }
     }
-
-    public void UpdateRespawnPosition(Transform newRespawnPoint) => respawnPoint = newRespawnPoint;
-
 }

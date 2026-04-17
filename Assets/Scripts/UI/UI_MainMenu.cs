@@ -1,101 +1,103 @@
+using Managers;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class UI_MainMenu : MonoBehaviour
+namespace UI
 {
-    private UI_FadeEffect fadeEffect;
-    public string FirstLevelName;
-
-    
-    [SerializeField] private GameObject[] uiElements;
-
-    [SerializeField] private GameObject continueButton;
-
-    [Header("Interactive Camera")]
-    [SerializeField] private MenuCharcater menuCharacter;
-    [SerializeField] private CinemachineCamera cinemachine;
-    [SerializeField] private Transform mainMenuPoint;
-    [SerializeField] private Transform skinSelectionPoint;
-
-    private void Awake()
+    public class UIMainMenu : MonoBehaviour
     {
-        fadeEffect = GetComponentInChildren<UI_FadeEffect>();
-    }
+        public string firstLevelName;
 
-    private void Start()
-    {
-        if (HasLevelProgression())
-            continueButton.SetActive(true);
+        [Header("UI Elements")]
+        [SerializeField] private GameObject[] uiElements;
+        [SerializeField] private GameObject continueButton;
+        [Header("Interactive Camera")]
+        [SerializeField] private MenuCharacter menuCharacter;
+        [SerializeField] private CinemachineCamera cinemachine;
+        [SerializeField] private Transform mainMenuPoint;
+        [SerializeField] private Transform skinSelectionPoint;
 
-        fadeEffect.ScreenFade(0, 1.5f);
-    }
+        private UIFadeEffect fadeEffect;
 
-    private void Update()
-    {
-        if (PlayerPrefs.GetInt("ContinueLevelNumber", 0) == 0) continueButton.SetActive(false);
-    }
+        private void Awake()
+        {
+            fadeEffect = GetComponentInChildren<UIFadeEffect>();
+        }
+
+        private void Start()
+        {
+            if (HasLevelProgression())
+                continueButton.SetActive(true);
+
+            fadeEffect.ScreenFade(0, 1.5f);
+        }
+
+        private void Update()
+        {
+            if (PlayerPrefs.GetInt("ContinueLevelNumber", 0) == 0) continueButton.SetActive(false);
+        }
             
 
-    public void SwitchUI(GameObject uiToEnable)
-    {
-        foreach (GameObject ui in uiElements)
+        public void SwitchUI(GameObject uiToEnable)
         {
-            ui.SetActive(false);
+            foreach (GameObject ui in uiElements)
+            {
+                ui.SetActive(false);
+            }
+
+            uiToEnable.SetActive(true);
+
+            AudioManager.Instance.PlaySfx(4);
         }
 
-        uiToEnable.SetActive(true);
-
-        AudioManager.instance.PlaySFX(4);
-    }
-
-    public void NewGame()
-    {
-
-        fadeEffect.ScreenFade(1, 1.5f,LoadLevelScene);
-        if (Time.timeScale == 0f) Time.timeScale = 1f;
-        AudioManager.instance.PlaySFX(4);
-    }
-
-    private void LoadLevelScene() => SceneManager.LoadScene(FirstLevelName);
-
-    private bool HasLevelProgression()
-    {
-        bool hasLevelProgression = PlayerPrefs.GetInt("ContinueLevelNumber", 0) > 0;
-
-        return hasLevelProgression;
-    }
-
-    public void ContinueGame()
-    {
-        int difficultyIndex =  PlayerPrefs.GetInt("GameDifficulty",1);
-        int levelToLoad = PlayerPrefs.GetInt("ContinueLevelNumber", 0);
-        int lastSavedSkin = PlayerPrefs.GetInt("LastUsedSkin");
-
-        SkinManager.instance.SetSkinId(lastSavedSkin);
-
-        DifficultyManager.instance.LoadDifficulty(difficultyIndex);
-
-        if (levelToLoad == 0)
+        public void NewGame()
         {
-            continueButton.SetActive(false);
-            return;
+            fadeEffect.ScreenFade(1, 1.5f,LoadLevelScene);
+            if (Time.timeScale == 0f) Time.timeScale = 1f;
+            AudioManager.Instance.PlaySfx(4);
         }
 
-        if (Time.timeScale == 0f) Time.timeScale = 1f;
-        SceneManager.LoadScene("Level_" + levelToLoad);
-        AudioManager.instance.PlaySFX(4);
-    }
+        public void ContinueGame()
+        {
+            int difficultyIndex =  PlayerPrefs.GetInt("GameDifficulty",1);
+            int levelToLoad = PlayerPrefs.GetInt("ContinueLevelNumber", 0);
+            int lastSavedSkin = PlayerPrefs.GetInt("LastUsedSkin");
 
-    public void MoveCameraToMainMenu()
-    {
-        menuCharacter.MoveTo(mainMenuPoint);
-        cinemachine.Follow = mainMenuPoint;
-    }
+            SkinManager.Instance.SetSkinId(lastSavedSkin);
 
-    public void MoveCameraToSkinMenu()
-    {
-        menuCharacter.MoveTo(skinSelectionPoint);
-        cinemachine.Follow = skinSelectionPoint;
+            DifficultyManager.Instance.LoadDifficulty(difficultyIndex);
+
+            if (levelToLoad == 0)
+            {
+                continueButton.SetActive(false);
+                return;
+            }
+
+            if (Time.timeScale == 0f) Time.timeScale = 1f;
+            SceneManager.LoadScene("Level_" + levelToLoad);
+            AudioManager.Instance.PlaySfx(4);
+        }
+
+        public void MoveCameraToMainMenu()
+        {
+            menuCharacter.MoveTo(mainMenuPoint);
+            cinemachine.Follow = mainMenuPoint;
+        }
+
+        public void MoveCameraToSkinMenu()
+        {
+            menuCharacter.MoveTo(skinSelectionPoint);
+            cinemachine.Follow = skinSelectionPoint;
+        }
+        
+        private void LoadLevelScene() => SceneManager.LoadScene(firstLevelName);
+
+        private bool HasLevelProgression()
+        {
+            bool hasLevelProgression = PlayerPrefs.GetInt("ContinueLevelNumber", 0) > 0;
+
+            return hasLevelProgression;
+        }
     }
 }

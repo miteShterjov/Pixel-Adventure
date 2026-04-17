@@ -1,15 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerAnimationEvents : MonoBehaviour
+namespace Player
 {
-    private Player player;
-
-    private void Awake()
+    public class PlayerAnimationEvents : MonoBehaviour
     {
-        player = GetComponentInParent<Player>();
-    }
+        private global::Player.Player player;
 
-    public void FinishRespawn() => player.RespawnFinished(true);
+        private void Awake()
+        {
+            player = GetComponentInParent<global::Player.Player>();
+        }
+
+        public void FinishRespawn() => player.RespawnFinished(true);
+    }
 }

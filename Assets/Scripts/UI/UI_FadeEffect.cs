@@ -2,36 +2,37 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI_FadeEffect : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private Image fadeImage;
-
-
-    public void ScreenFade(float targetAlpha, float duration,System.Action onComplete = null)
+    public class UIFadeEffect : MonoBehaviour
     {
-        StartCoroutine(FadeCoroutine(targetAlpha, duration,onComplete));
-    }
+        [Header("Fade Image")]
+        [SerializeField] private Image fadeImage;
 
-
-    private IEnumerator FadeCoroutine(float targetAlpha, float duration, System.Action onComplete)
-    {
-        float time = 0;
-        Color currentColor = fadeImage.color;
-
-        float startAlpha = currentColor.a;
-
-        while (time < duration)
+        public void ScreenFade(float targetAlpha, float duration,System.Action onComplete = null)
         {
-            time += Time.deltaTime;
-
-            float alpha = Mathf.Lerp(startAlpha, targetAlpha, time / duration);
-
-            fadeImage.color = new Color(currentColor.r,currentColor.g,currentColor.b,alpha);
-            yield return null;
+            StartCoroutine(FadeCoroutine(targetAlpha, duration,onComplete));
         }
 
-        fadeImage.color = new Color(currentColor.r, currentColor.g, currentColor.b, targetAlpha);
+        private IEnumerator FadeCoroutine(float targetAlpha, float duration, System.Action onComplete)
+        {
+            float time = 0;
+            Color currentColor = fadeImage.color;
+            float startAlpha = currentColor.a;
 
-        onComplete?.Invoke();
+            while (time < duration)
+            {
+                time += Time.deltaTime;
+
+                float alpha = Mathf.Lerp(startAlpha, targetAlpha, time / duration);
+
+                fadeImage.color = new Color(currentColor.r,currentColor.g,currentColor.b,alpha);
+                yield return null;
+            }
+
+            fadeImage.color = new Color(currentColor.r, currentColor.g, currentColor.b, targetAlpha);
+
+            onComplete?.Invoke();
+        }
     }
 }

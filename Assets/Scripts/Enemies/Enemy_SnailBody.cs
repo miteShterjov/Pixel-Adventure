@@ -1,28 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy_SnailBody : MonoBehaviour
+namespace Enemies
 {
-    private SpriteRenderer sr;
-    private Rigidbody2D rb;
-    private float zRotation;
-
-    public void SetupBody(float yVelocity, float zRotation,int facingDir)
+    public class EnemySnailBody : MonoBehaviour
     {
-        rb = GetComponent<Rigidbody2D>();
-        sr = GetComponent<SpriteRenderer>();
+        private SpriteRenderer sr;
+        private Rigidbody2D rb;
+        private float zRotation;
 
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, yVelocity);
+        public void SetupBody(float yVelocity, float zRotation,int facingDir)
+        {
+            rb = GetComponent<Rigidbody2D>();
+            sr = GetComponent<SpriteRenderer>();
 
-        this.zRotation = zRotation;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, yVelocity);
 
-        if (facingDir == 1)
-            sr.flipX = true;
-    }
+            this.zRotation = zRotation;
 
-    private void Update()
-    {
-        transform.Rotate(0, 0, zRotation * Time.deltaTime);
+            if (facingDir == 1) sr.flipX = true;
+        }
+
+        private void Update()
+        {
+            transform.Rotate(0, 0, zRotation * Time.deltaTime);
+        }
     }
 }

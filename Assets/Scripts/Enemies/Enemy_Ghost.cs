@@ -1,105 +1,107 @@
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class Enemy_Ghost : Enemy
+namespace Enemies
 {
-    [Header("Ghost details"), Space]
-    [SerializeField] private float agrroRadius;
-    [SerializeField] private float activeDuration;
-    [SerializeField] private float activeTimer;
-    [Space]
-    [SerializeField] private float xMinDistance;
-    [SerializeField] private float yMinDistance;
-    [SerializeField] private float yMaxDistance;
-    [SerializeField] private Transform target;
-
-    private bool isChasing;
-
-    protected override void Update()
+    public class EnemyGhost : Enemy
     {
-        base.Update();
+        [Header("Ghost details"), Space]
+        [SerializeField] private float aggroRadius;
+        [SerializeField] private float activeDuration;
+        [SerializeField] private float activeTimer;
+        [Space]
+        [SerializeField] private float xMinDistance;
+        [SerializeField] private float yMinDistance;
+        [SerializeField] private float yMaxDistance;
+        [SerializeField] private Transform target;
 
-        if (isDead) return;
-        if (target == null)
+        private bool isChasing;
+        
+        private static readonly int AppearParam = Animator.StringToHash("appear");
+        private static readonly int DisappearParam = Animator.StringToHash("disappear");
+
+        protected override void Update()
         {
-            Collider2D playerCollider = Physics2D.OverlapCircle(transform.position, agrroRadius, whatIsPlayer);
-            if (playerCollider != null) target = playerCollider.gameObject.transform;
-            return;
+            base.Update();
+
+            if (isDead) return;
+            if (!target)
+            {
+                Collider2D playerCollider = Physics2D.OverlapCircle(transform.position, aggroRadius, whatIsPlayer);
+                if (playerCollider) target = playerCollider.gameObject.transform;
+                return;
+            }
+
+            activeTimer -= Time.deltaTime;
+
+            if (!isChasing && idleTimer < 0 && target) StartChase();
+            else if(isChasing && activeTimer < 0) EndChase();
+        
+            HandleMovement();
+        }
+        
+        public override void Die()
+        {
+            const float dieFallSpeed = -5;
+            rb.linearVelocity = Vector2.zero;
+            base.Die();
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, dieFallSpeed);
+            canMove = false;
+        }
+        
+        protected override void HandleAnimator()
+        {
+        
         }
 
-        activeTimer -= Time.deltaTime;
-
-
-        if (isChasing == false && idleTimer < 0 && target != null) StartChase();
-        else if(isChasing && activeTimer < 0) EndChase();
-        
-        HandleMovement();
-    }
-
-    private void HandleMovement()
-    {
-        if (canMove == false) return;
-
-        HandleFlip(target.position.x);
-        transform.position = Vector2.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
-    }
-
-    private void StartChase()
-    {
-        if (target == null)
+        protected override void OnDrawGizmos()
         {
-            EndChase();
-            return;
+            base.OnDrawGizmos();
+
+            Gizmos.DrawWireSphere(transform.position, aggroRadius);
         }
 
-        float xOffset = UnityEngine.Random.Range(0, 100) < 50 ? -1 : 1;
-        float yPosition = UnityEngine.Random.Range(yMinDistance, yMaxDistance);
+        private void HandleMovement()
+        {
+            if (!canMove) return;
 
-        transform.position = target.position + new Vector3(xMinDistance * xOffset, yPosition);
+            HandleFlip(target.position.x);
+            transform.position = Vector2.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
+        }
 
-        activeTimer = activeDuration;
-        isChasing = true;
-        anim.SetTrigger("appear");
-    }
+        private void StartChase()
+        {
+            if (!target)
+            {
+                EndChase();
+                return;
+            }
 
-    private void EndChase()
-    {
-        idleTimer = idleDuration;
-        isChasing = false;
-        anim.SetTrigger("desappear");
-    }
+            float xOffset = Random.Range(0, 100) < 50 ? -1 : 1;
+            float yPosition = Random.Range(yMinDistance, yMaxDistance);
 
-    private void MakeInvisible()
-    {
-        sr.color = Color.clear;
-        EnableColliders(false);
-    }
-    private void MakeVisible()
-    {
-        sr.color = Color.white;
-        EnableColliders(true);
-    }
+            transform.position = target.position + new Vector3(xMinDistance * xOffset, yPosition);
 
-    public override void Die()
-    {
-        float dieFallSpeed = -5;
-        rb.linearVelocity = Vector2.zero;
-        base.Die();
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, dieFallSpeed);
-        canMove = false;
-    }
-    protected override void HandleAnimator()
-    {
-        
-    }
+            activeTimer = activeDuration;
+            isChasing = true;
+            anim.SetTrigger(AppearParam);
+        }
 
-    protected override void OnDrawGizmos()
-    {
-        base.OnDrawGizmos();
+        private void EndChase()
+        {
+            idleTimer = idleDuration;
+            isChasing = false;
+            anim.SetTrigger(DisappearParam);
+        }
 
-        Gizmos.DrawWireSphere(transform.position, agrroRadius);
+        private void MakeInvisible()
+        {
+            sr.color = Color.clear;
+            EnableColliders(false);
+        }
+        private void MakeVisible()
+        {
+            sr.color = Color.white;
+            EnableColliders(true);
+        }
     }
 }

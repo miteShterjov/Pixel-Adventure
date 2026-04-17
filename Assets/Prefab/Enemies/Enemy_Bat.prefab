@@ -237,7 +237,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Bat
   moveSpeed: 5
-  idleDuration: 1.5
+  idleDuration: 1
   isFacingRight: 0
   deathImpactSpeed: -5
   deathRotationSpeed: 150
@@ -251,10 +251,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   groundCheck: {fileID: 4282000312785162963}
-  agrroRadius: 7
-  chaseDuration: 5
-  attackSpeed: 0
-  dieFallSpeed: -5
+  aggroRadius: 10
+  chaseDuration: 10
+  attackSpeed: 1
 --- !u!114 &-74847701412245841
 MonoBehaviour:
   m_ObjectHideFlags: 0

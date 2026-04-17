@@ -1,135 +1,140 @@
+using System;
 using System.Collections;
+using Managers;
 using UnityEngine;
 
-public class PlayerHealthController : MonoBehaviour
+namespace Player
 {
-    [SerializeField] private GameObject fruitDrop;
-    [SerializeField] private DifficultyType gameDifficulty;
-    private GameManager gameManager;
-    private Rigidbody2D rb;
-    private CapsuleCollider2D cd;
-    private PlayerAnimationController animationController;
-
-    [Header("Knockback")]
-    [SerializeField] private float knockbackDuration = 1;
-    [SerializeField] private Vector2 knockbackPower;
-
-    [Header("Player Visuals")]
-    [SerializeField] private GameObject deathVfx;
-
-    private bool isKnocked;
-
-    public bool IsKnocked => isKnocked;
-
-    private void Awake()
+    public class PlayerHealthController : MonoBehaviour
     {
-        rb = GetComponent<Rigidbody2D>();
-        cd = GetComponent<CapsuleCollider2D>();
-        animationController = GetComponent<PlayerAnimationController>();
-    }
+        public bool IsKnocked { get; private set; }
 
-    private void Start()
-    {
-        gameManager = GameManager.instance;
-        UpdateGameDifficulty();
-    }
+        [Header("Gameplay")]
+        [SerializeField] private GameObject fruitDrop;
+        [SerializeField] private DifficultyType gameDifficulty;
+        [Header("Knockback")]
+        [SerializeField] private float knockbackDuration = 1;
+        [SerializeField] private Vector2 knockbackPower;
+        [Header("Player Visuals")]
+        [SerializeField] private GameObject deathVfx;
 
-    private void UpdateGameDifficulty()
-    {
-        DifficultyManager difficultyManager = DifficultyManager.instance;
+        private GameManager gameManager;
+        private Rigidbody2D rb;
+        private CapsuleCollider2D cd;
+        private PlayerAnimationController animationController;
 
-        if (difficultyManager != null)
-            gameDifficulty = difficultyManager.difficulty;
-    }
 
-    public void Damage()
-    {
-        if (gameDifficulty == DifficultyType.Normal)
+        private void Awake()
         {
-            if (gameManager.FruitsCollected() <= 0)
+            rb = GetComponent<Rigidbody2D>();
+            cd = GetComponent<CapsuleCollider2D>();
+            animationController = GetComponent<PlayerAnimationController>();
+        }
+
+        private void Start()
+        {
+            gameManager = GameManager.Instance;
+            UpdateGameDifficulty();
+        }
+
+        public void Damage()
+        {
+            switch (gameDifficulty)
             {
-                Die();
-                gameManager.RestartLevel();
+                case DifficultyType.Normal:
+                {
+                    if (gameManager.FruitsCollected() <= 0)
+                    {
+                        Die();
+                        gameManager.RestartLevel();
+                    }
+                    else
+                    {
+                        ObjectCreator.Instance.CreateObject(fruitDrop, transform, true);
+                        gameManager.RemoveFruit();
+                    }
+                    return;
+                }
+                
+                case DifficultyType.Hard:
+                    Die();
+                    gameManager.RestartLevel();
+                    break;
+                
+                case DifficultyType.Easy:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public void Knockback(float sourceDamageXPosition)
+        {
+            float knockbackDir = 1;
+
+            if (transform.position.x < sourceDamageXPosition) knockbackDir = -1;
+
+            if (IsKnocked) return;
+
+            AudioManager.Instance.PlaySfx(9);
+            CameraManager.Instance.ScreenShake(knockbackDir);
+            StartCoroutine(KnockbackCo());
+
+            rb.linearVelocity = new Vector2(knockbackPower.x * knockbackDir, knockbackPower.y);
+        }
+
+        public void Die()
+        {
+            AudioManager.Instance.PlaySfx(0);
+            GameObject newDeathVfx = Instantiate(deathVfx, transform.position, Quaternion.identity);
+            Destroy(gameObject);
+        }
+
+        public void Push(Vector2 direction, float duration = 0)
+        {
+            StartCoroutine(PushCo(direction, duration));
+        }
+
+        public void RespawnFinished(bool finished)
+        {
+            if (finished)
+            {
+                rb.gravityScale = 1; // Will be reset by JumpController
+                cd.enabled = true;
+                AudioManager.Instance.PlaySfx(11);
             }
             else
             {
-                ObjectCreator.instance.CreateObject(fruitDrop, transform, true);
-                gameManager.RemoveFruit();
+                rb.gravityScale = 0;
+                cd.enabled = false;
             }
-
-            return;
         }
-
-        if (gameDifficulty == DifficultyType.Hard)
+        
+        private IEnumerator KnockbackCo()
         {
-            Die();
-            gameManager.RestartLevel();
+            IsKnocked = true;
+            animationController.SetKnockedAnimation(true);
+
+            yield return new WaitForSeconds(knockbackDuration);
+
+            IsKnocked = false;
+            animationController.SetKnockedAnimation(false);
         }
-    }
-
-    public void Knockback(float sourceDamageXPosition)
-    {
-        float knockbackDir = 1;
-
-        if (transform.position.x < sourceDamageXPosition)
-            knockbackDir = -1;
-
-        if (isKnocked)
-            return;
-
-        AudioManager.instance.PlaySFX(9);
-        CameraManager.instance.ScreenShake(knockbackDir);
-        StartCoroutine(KnockbackRoutine());
-
-        rb.linearVelocity = new Vector2(knockbackPower.x * knockbackDir, knockbackPower.y);
-    }
-
-    private IEnumerator KnockbackRoutine()
-    {
-        isKnocked = true;
-        animationController.SetKnockedAnimation(true);
-
-        yield return new WaitForSeconds(knockbackDuration);
-
-        isKnocked = false;
-        animationController.SetKnockedAnimation(false);
-    }
-
-    public void Die()
-    {
-        AudioManager.instance.PlaySFX(0);
-        GameObject newDeathVfx = Instantiate(deathVfx, transform.position, Quaternion.identity);
-        Destroy(gameObject);
-    }
-
-    public void Push(Vector2 direction, float duration = 0)
-    {
-        StartCoroutine(PushCouroutine(direction, duration));
-    }
-
-    private IEnumerator PushCouroutine(Vector2 direction, float duration)
-    {
-        // Disable player control is handled by main Player script
-        rb.linearVelocity = Vector2.zero;
-        rb.AddForce(direction, ForceMode2D.Impulse);
-
-        yield return new WaitForSeconds(duration);
-
-        // Re-enable player control is handled by main Player script
-    }
-
-    public void RespawnFinished(bool finished)
-    {
-        if (finished)
+        
+        private IEnumerator PushCo(Vector2 direction, float duration)
         {
-            rb.gravityScale = 1; // Will be reset by JumpController
-            cd.enabled = true;
-            AudioManager.instance.PlaySFX(11);
+            rb.linearVelocity = Vector2.zero;
+            rb.AddForce(direction, ForceMode2D.Impulse);
+
+            yield return new WaitForSeconds(duration);
         }
-        else
+        
+        private void UpdateGameDifficulty()
         {
-            rb.gravityScale = 0;
-            cd.enabled = false;
+            DifficultyManager difficultyManager = DifficultyManager.Instance;
+
+            if (difficultyManager != null) gameDifficulty = difficultyManager.difficulty;
         }
+
     }
 }
